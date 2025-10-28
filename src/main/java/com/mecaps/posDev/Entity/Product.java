@@ -16,15 +16,21 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long product_id;
+
+    @Column(nullable = false)
     private String product_name;
+
+    @Column(nullable = false)
     private String product_description;
+
+    @Column(nullable = false , unique = true)
     private String sku;
 
     @ManyToOne
     private Category category_id;
 
     @OneToMany(mappedBy = "product_variant_id",  cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductVariant> product_variants = new ArrayList<>();
+    private List<ProductVariant> product_variant = new ArrayList<>();
 
     @OneToMany(mappedBy = "product_id", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductInventory> inventories = new ArrayList<>();

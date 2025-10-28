@@ -6,7 +6,7 @@ import com.mecaps.posDev.Response.ProductVariantResponse;
 import java.util.List;
 
 public interface ProductIVariantService {
-    ProductVariantResponse CreateProductVariant(Long id,ProductVariantRequest productVariantRequest);
+    ProductVariantResponse CreateProductVariant(ProductVariantRequest productVariantRequest);
     List<ProductVariantResponse> getAll();
     String deleteProductVariant(Long id);
     ProductVariantResponse updateProductVariant(Long id, ProductVariantRequest productVariantRequest);

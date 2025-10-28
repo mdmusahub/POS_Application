@@ -22,8 +22,8 @@ final ProductIVariantService productVariantService;
               // FOR CREATE //
 
             @PostMapping("/createProductVariant")
-            public ProductVariantResponse createProductVariant(@PathVariable Long id,@RequestBody ProductVariantRequest productVariantRequest){
-            return productVariantService.CreateProductVariant(id, productVariantRequest);
+            public ProductVariantResponse createProductVariant(@RequestBody ProductVariantRequest productVariantRequest){
+            return productVariantService.CreateProductVariant( productVariantRequest);
 }
 
 

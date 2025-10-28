@@ -12,7 +12,11 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long category_id;
+
+    @Column(nullable = false, unique = true)
     private String category_name;
+
+    @Column(nullable = false)
     private String category_description;
 
     @ManyToOne

@@ -26,8 +26,8 @@ public class ProductVariantServiceImplementation implements ProductIVariantServi
         this.productRepository = productRepository;
     }
                      // CREATE METHOD FOR PRODUCTVARIANT //
-    public ProductVariantResponse CreateProductVariant(Long id,ProductVariantRequest productVariantRequest){
-        Product product = productRepository.findById(id).orElseThrow(()-> new RuntimeException("Product Not Found"));
+    public ProductVariantResponse CreateProductVariant(ProductVariantRequest productVariantRequest){
+        Product product = productRepository.findById(productVariantRequest.getProduct_id()).orElseThrow(()-> new RuntimeException("Product Not Found"));
 
         ProductVariant productVariant = new ProductVariant();
 
