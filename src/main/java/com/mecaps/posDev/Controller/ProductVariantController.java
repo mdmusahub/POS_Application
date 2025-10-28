@@ -2,28 +2,27 @@ package com.mecaps.posDev.Controller;
 
 import com.mecaps.posDev.Request.ProductVariantRequest;
 import com.mecaps.posDev.Response.ProductVariantResponse;
-import com.mecaps.posDev.Service.ProductVariantService;
+import com.mecaps.posDev.ServiceImplementation.ProductVariantServiceImplementation;
 
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/productVariant")
 public class ProductVariantController {
-final private ProductVariantService productVariantService;
+final private ProductVariantServiceImplementation productVariantServiceImplementation;
 
 
-    public ProductVariantController(ProductVariantService productVariantService) {
-        this.productVariantService = productVariantService;
+    public ProductVariantController(ProductVariantServiceImplementation productVariantServiceImplementation) {
+        this.productVariantServiceImplementation = productVariantServiceImplementation;
     }
 
               // FOR CREATE //
 
            @PostMapping("/createProductVariant")
             public ProductVariantResponse createProductVariant(@RequestBody ProductVariantRequest productVariantRequest){
-            return productVariantService.CreateProductVariant(productVariantRequest);
+            return productVariantServiceImplementation.CreateProductVariant(productVariantRequest);
 }
 
 
@@ -31,7 +30,7 @@ final private ProductVariantService productVariantService;
 
             @GetMapping("/getProductVariant")
             public List<ProductVariantResponse> getAll(){
-            return productVariantService.getAll();
+            return productVariantServiceImplementation.getAll();
             }
 
 
@@ -39,7 +38,7 @@ final private ProductVariantService productVariantService;
 
             @PutMapping("/updateProductVariant/{id}")
             public ProductVariantResponse updateProductVariant(@PathVariable Long id,@RequestBody ProductVariantRequest productVariantRequest){
-            return  productVariantService.updateProductVariant(id,productVariantRequest);
+            return  productVariantServiceImplementation.updateProductVariant(id,productVariantRequest);
             }
 
 
@@ -47,6 +46,6 @@ final private ProductVariantService productVariantService;
 
             @DeleteMapping("/deleteProductVariant/{id}")
             public String deleteProductVariant(@PathVariable Long id){
-            return productVariantService.deleteProductVariant(id);
+            return productVariantServiceImplementation.deleteProductVariant(id);
             }
 }
