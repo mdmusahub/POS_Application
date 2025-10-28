@@ -21,9 +21,9 @@ final ProductIVariantService productVariantService;
 
               // FOR CREATE //
 
-           @PostMapping("/createProductVariant")
-            public ProductVariantResponse createProductVariant(@RequestBody ProductVariantRequest productVariantRequest){
-            return productVariantService.CreateProductVariant(productVariantRequest);
+            @PostMapping("/createProductVariant")
+            public ProductVariantResponse createProductVariant(@PathVariable Long id,@RequestBody ProductVariantRequest productVariantRequest){
+            return productVariantService.CreateProductVariant(id, productVariantRequest);
 }
 
 
@@ -51,10 +51,12 @@ final ProductIVariantService productVariantService;
             }
 
             @GetMapping("/paginated")
-           public List<ProductVariantResponse> getPaginatedProductVariants
-                    (@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "5") int size,
+            public List<ProductVariantResponse> getPaginatedProductVariants
+                    (@RequestParam(defaultValue = "0") int page,
+                     @RequestParam(defaultValue = "5") int size,
                      @RequestParam(defaultValue = "product_variant_price")String sortBy,
-                     @RequestParam(defaultValue = "asc") String direction){
+                     @RequestParam(defaultValue = "asc") String direction)
+            {
               return productVariantService.getPaginatedProductVariants(page,size,sortBy,direction);
             }
 }
