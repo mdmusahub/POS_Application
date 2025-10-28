@@ -20,7 +20,7 @@ public class ProductVariant {
     @ManyToOne
     private Product product_id;
 
-    @OneToMany(mappedBy = "product_variant_id", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "product_variant_id", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductInventory> inventories = new ArrayList<>();
 
 }
