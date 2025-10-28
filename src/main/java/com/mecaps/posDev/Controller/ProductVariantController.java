@@ -3,7 +3,7 @@ package com.mecaps.posDev.Controller;
 import com.mecaps.posDev.Request.ProductVariantRequest;
 import com.mecaps.posDev.Response.ProductVariantResponse;
 import com.mecaps.posDev.Service.ProductVariantService;
-import com.mecaps.posDev.ServiceImplementation.ProductVariantServiceImplementation;
+
 
 import org.springframework.web.bind.annotation.*;
 
