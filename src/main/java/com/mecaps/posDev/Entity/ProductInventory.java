@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class ProductInventory {
 @Id
 @GeneratedValue(strategy = GenerationType.IDENTITY)
-private int inventory_id;
+private Long inventory_id;
 
 @DateTimeFormat
 @CreationTimestamp

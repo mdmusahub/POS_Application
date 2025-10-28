@@ -1,21 +1,24 @@
-package com.mecaps.posDev.Service;
+package com.mecaps.posDev.ServiceImplementation;
 
-import com.mecaps.posDev.Entity.ProductInventory;
 import com.mecaps.posDev.Entity.ProductVariant;
 import com.mecaps.posDev.Repository.ProductVariantRepository;
 import com.mecaps.posDev.Request.ProductVariantRequest;
 import com.mecaps.posDev.Response.ProductVariantResponse;
-import org.springframework.http.ResponseEntity;
+import com.mecaps.posDev.Service.ProductIVariantService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class ProductVariantService {
+public class ProductVariantServiceImplementation implements ProductIVariantService {
 
 final private ProductVariantRepository productVariantRepository;
 
-    public ProductVariantService(ProductVariantRepository productVariantRepository) {
+    public ProductVariantServiceImplementation(ProductVariantRepository productVariantRepository) {
         this.productVariantRepository = productVariantRepository;
     }
                      // CREATE METHOD FOR PRODUCTVARIANT //
@@ -54,5 +57,15 @@ productVariant1.setProduct_variant_name(productVariantRequest.getProduct_variant
 ProductVariant save = productVariantRepository.save(productVariant1);
 return new ProductVariantResponse(save);
 }
+
+
+
+public List<ProductVariantResponse> getPaginatedProductVariants(int page, int size, String sortBy, String direction) {
+        Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+    Pageable pageable = PageRequest.of(page, size, sort);
+    Page<ProductVariant> productVariantPage = productVariantRepository.findAll(pageable);
+    return productVariantPage.getContent().stream().map(ProductVariantResponse :: new).toList();
+}
+
 
 }
