@@ -4,10 +4,10 @@ import com.mecaps.posDev.Request.ProductVariantRequest;
 import com.mecaps.posDev.Response.ProductVariantResponse;
 import com.mecaps.posDev.Service.ProductVariantService;
 
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/productVariant")
@@ -23,7 +23,7 @@ final private ProductVariantService productVariantService;
 
            @PostMapping("/createProductVariant")
             public ProductVariantResponse createProductVariant(@RequestBody ProductVariantRequest productVariantRequest){
-            return productVariantService.CreateProductVariant(productVariantRequest);
+            return productVariantService.createProductVariant(productVariantRequest);
 }
 
 
@@ -31,7 +31,7 @@ final private ProductVariantService productVariantService;
 
             @GetMapping("/getProductVariant")
             public List<ProductVariantResponse> getAll(){
-            return productVariantService.getAll();
+            return productVariantService.getAllProductVariant();
             }
 
 
