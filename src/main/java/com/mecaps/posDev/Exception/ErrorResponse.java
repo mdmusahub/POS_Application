@@ -1,4 +1,4 @@
-package com.mecaps.posDev.exception;
+package com.mecaps.posDev.Exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

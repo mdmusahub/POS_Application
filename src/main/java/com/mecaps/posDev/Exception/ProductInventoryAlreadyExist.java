@@ -1,4 +1,4 @@
-package com.mecaps.posDev.exception;
+package com.mecaps.posDev.Exception;
 
 public class ProductInventoryAlreadyExist extends RuntimeException{
 

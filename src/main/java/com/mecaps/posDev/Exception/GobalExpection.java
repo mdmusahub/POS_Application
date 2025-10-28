@@ -1,4 +1,4 @@
-package com.mecaps.posDev.exception;
+package com.mecaps.posDev.Exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
