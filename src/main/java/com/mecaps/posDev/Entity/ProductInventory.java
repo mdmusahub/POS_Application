@@ -19,12 +19,15 @@ private Long inventory_id;
 @CreationTimestamp
 private LocalDateTime last_updated;
 
+@Column(nullable = false)
 private String location;
+
+@Column(nullable = false)
 private Long quantity;
 
 @ManyToOne
 private Product product_id;
 
 @OneToOne
-private ProductVariant product_variant_id;
+private ProductVariant product_variant;
 }

@@ -18,22 +18,22 @@ public class ProductController
         this.productService = productService;
     }
 
-        @PostMapping("/product/create")
-        public ProductResponse createproduct(@RequestBody ProductRequest req) {
-        return productService.createPost(req);
+        @PostMapping("/createProduct")
+        public ProductResponse createProduct(@RequestBody ProductRequest req) {
+        return productService.createProduct(req);
         }
 
-        @DeleteMapping("/product/delete/{id}")
+        @DeleteMapping("/deleteProduct/{id}")
         public Product deleteProduct(@PathVariable Long id){
         return productService.deleteProduct(id);
         }
 
-        @PutMapping("/product/update/{id}")
+        @PutMapping("/updateProduct/{id}")
         public ProductResponse updateProduct(@PathVariable Long id, @RequestBody ProductRequest req) {
-        return productService.updateProduct(id, req);
+        return productService.updateProduct( id, req);
         }
 
-        @GetMapping("/product/get")
+        @GetMapping("/getProduct")
         public List<ProductResponse> getProduct(){
         return productService.getProduct();
         }
