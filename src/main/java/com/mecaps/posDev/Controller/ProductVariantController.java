@@ -5,6 +5,7 @@ import com.mecaps.posDev.Response.ProductVariantResponse;
 import com.mecaps.posDev.Service.ProductIVariantService;
 import com.mecaps.posDev.ServiceImplementation.ProductVariantServiceImplementation;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -61,7 +62,8 @@ final ProductIVariantService productVariantService;
             }
 
             @GetMapping("/getProudctVariantById/{id}")
-    public ProductVariantResponse findUserById(@PathVariable Long id){
-        return productVariantServiceImplementation.findByUserId(id);
+    public ResponseEntity<ProductVariantResponse> findUserById(@PathVariable Long id){
+        ProductVariantResponse productVariantResponse = productVariantService.findUserById(id);
+        return ResponseEntity.ok(productVariantResponse);
             }
 }
