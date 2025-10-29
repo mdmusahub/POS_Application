@@ -2,6 +2,8 @@ package com.mecaps.posDev.ServiceImplementation;
 
 import com.mecaps.posDev.Entity.Category;
 import com.mecaps.posDev.Entity.Product;
+import com.mecaps.posDev.Exception.ProductAlreadyExist;
+import com.mecaps.posDev.Exception.ProductNotFoundExpection;
 import com.mecaps.posDev.Repository.CategoryRepository;
 import com.mecaps.posDev.Repository.ProductRepository;
 import com.mecaps.posDev.Repository.ProductVariantRepository;
@@ -26,9 +28,11 @@ public class ProductServiceImplementation implements ProductService {
 
 
     public ProductResponse createProduct(ProductRequest req) {
+        productRepository.findByProduct_name(req.getProduct_name()).ifPresent(present->{throw new ProductAlreadyExist("product already found " + req.getProduct_name());
+        });
         Product product = new Product();
         Category category = categoryRepository.findById(req.getCategory_id())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+        .orElseThrow(() -> new ProductNotFoundExpection("Category not found"));
         product.setCategory_id(category);
         product.setProduct_name(req.getProduct_name());
         product.setProduct_description(req.getProduct_description());
@@ -39,14 +43,14 @@ public class ProductServiceImplementation implements ProductService {
 
 
     public Product deleteProduct(Long id) {
-        Product deleteProduct = productRepository.findById(id).orElseThrow(()->new RuntimeException("No product found"));
+        Product deleteProduct = productRepository.findById(id).orElseThrow(()->new ProductNotFoundExpection("This Product id is not found " + id));
         productRepository.delete(deleteProduct);
         return deleteProduct;
     }
 
 
     public ProductResponse updateProduct(Long id, ProductRequest req) {
-        Product updatePro = productRepository.findById(id).orElseThrow(()->new RuntimeException("Product not found"));
+        Product updatePro = productRepository.findById(id).orElseThrow(()->new ProductNotFoundExpection("This Product id is not found " + id));
         updatePro.setProduct_name(req.getProduct_name());
         updatePro.setProduct_description(req.getProduct_description());
         Product save = productRepository.save(updatePro) ;

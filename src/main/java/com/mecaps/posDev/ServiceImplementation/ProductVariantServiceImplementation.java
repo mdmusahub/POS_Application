@@ -2,6 +2,10 @@ package com.mecaps.posDev.ServiceImplementation;
 
 import com.mecaps.posDev.Entity.Product;
 import com.mecaps.posDev.Entity.ProductVariant;
+import com.mecaps.posDev.Exception.ProductAlreadyExist;
+import com.mecaps.posDev.Exception.ProductNotFoundExpection;
+import com.mecaps.posDev.Exception.ProductVariantAlreadyExist;
+import com.mecaps.posDev.Exception.ProductVariantNotFoundExpection;
 import com.mecaps.posDev.Repository.ProductRepository;
 import com.mecaps.posDev.Repository.ProductVariantRepository;
 import com.mecaps.posDev.Request.ProductVariantRequest;
@@ -26,11 +30,12 @@ final private ProductRepository productRepository;
                      // CREATE METHOD FOR PRODUCTVARIANT //
 
         public ProductVariantResponse createProductVariant(ProductVariantRequest productVariantRequest){
+        productVariantRepository.findByProduct_variant_name(productVariantRequest.getProduct_variant_name()).ifPresent(present->{throw new ProductVariantAlreadyExist("Product variant already found " + productVariantRequest.getProduct_variant_name());
+        });
         ProductVariant productVariant = new ProductVariant();
         Product product = productRepository.findById(productVariantRequest.getProduct_id())
-                .orElseThrow(()->new RuntimeException("Product not found"));
+                .orElseThrow(()->new ProductNotFoundExpection("Product not found"));
 
-        productVariant.setProduct_id(product);
 
         productVariant.setProduct_variant_name(productVariantRequest.getProduct_variant_name());
         productVariant.setProduct_variant_price(productVariantRequest.getProduct_variant_price());
@@ -52,7 +57,7 @@ return productVariantList.stream().map(ProductVariantResponse::new).toList();
                     // DELETE METHOD FOR PRODUCTVARIANT //
 
     public String deleteProductVariant(Long id) {
-        ProductVariant productVariant = productVariantRepository.findById(id).orElseThrow(()->new RuntimeException("No variant found"));
+        ProductVariant productVariant = productVariantRepository.findById(id).orElseThrow(()->new ProductVariantNotFoundExpection("This product variant id is not found " + id));
         productVariantRepository.delete(productVariant);
         return "Variant deleted";
     }
@@ -61,7 +66,7 @@ return productVariantList.stream().map(ProductVariantResponse::new).toList();
                         // UPDATE METHOD FOR PRODUCTVARIANT //
 
     public ProductVariantResponse updateProductVariant(Long id, ProductVariantRequest productVariantRequest) {
-        ProductVariant productVariant1 = productVariantRepository.findById(id).orElseThrow(()-> new RuntimeException("Not found"));
+        ProductVariant productVariant1 = productVariantRepository.findById(id).orElseThrow(()-> new ProductVariantNotFoundExpection("This product variant id is not found " + id));
         productVariant1.setProduct_variant_name(productVariantRequest.getProduct_variant_name());
         productVariant1.setProduct_variant_value(productVariantRequest.getProduct_variant_value());
         productVariant1.setProduct_variant_price(productVariantRequest.getProduct_variant_price());

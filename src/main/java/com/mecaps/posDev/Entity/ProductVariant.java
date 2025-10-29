@@ -18,9 +18,9 @@ public class ProductVariant {
     private String product_variant_value;
     
     @ManyToOne
-    private Product product_id;
+    private ProductVariant productVariant;
 
-    @OneToOne(mappedBy = "product_variant_id", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductInventory> inventories = new ArrayList<>();
 
 }
