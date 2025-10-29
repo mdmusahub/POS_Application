@@ -9,13 +9,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Entity
 @Data
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long product_id;
+<<<<<<< HEAD
 
     @Column(nullable = false)
     private String product_name;
@@ -34,6 +34,8 @@ public class Product {
 
     @OneToMany(mappedBy = "product_id", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductInventory> inventories = new ArrayList<>();
+=======
+>>>>>>> 0c32961e4a3c0849b0845da4eccc22dd66fc3a0c
 
     @DateTimeFormat
     @CreationTimestamp
