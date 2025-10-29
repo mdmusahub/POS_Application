@@ -2,6 +2,7 @@ package com.mecaps.posDev.Controller;
 
 import com.mecaps.posDev.Request.ProductVariantRequest;
 import com.mecaps.posDev.Response.ProductVariantResponse;
+import com.mecaps.posDev.Service.ProductIVariantService;
 import com.mecaps.posDev.ServiceImplementation.ProductVariantServiceImplementation;
 
 import org.springframework.web.bind.annotation.*;
@@ -11,18 +12,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/productVariant")
 public class ProductVariantController {
-final private ProductVariantServiceImplementation productVariantServiceImplementation;
+final ProductIVariantService productVariantService;
 
 
     public ProductVariantController(ProductVariantServiceImplementation productVariantServiceImplementation) {
-        this.productVariantServiceImplementation = productVariantServiceImplementation;
+        this.productVariantService = productVariantServiceImplementation;
     }
 
               // FOR CREATE //
 
-           @PostMapping("/createProductVariant")
+            @PostMapping("/createProductVariant")
             public ProductVariantResponse createProductVariant(@RequestBody ProductVariantRequest productVariantRequest){
-            return productVariantServiceImplementation.CreateProductVariant(productVariantRequest);
+            return productVariantService.CreateProductVariant( productVariantRequest);
 }
 
 
@@ -30,7 +31,7 @@ final private ProductVariantServiceImplementation productVariantServiceImplement
 
             @GetMapping("/getProductVariant")
             public List<ProductVariantResponse> getAll(){
-            return productVariantServiceImplementation.getAll();
+            return productVariantService.getAll();
             }
 
 
@@ -38,7 +39,7 @@ final private ProductVariantServiceImplementation productVariantServiceImplement
 
             @PutMapping("/updateProductVariant/{id}")
             public ProductVariantResponse updateProductVariant(@PathVariable Long id,@RequestBody ProductVariantRequest productVariantRequest){
-            return  productVariantServiceImplementation.updateProductVariant(id,productVariantRequest);
+            return  productVariantService.updateProductVariant(id,productVariantRequest);
             }
 
 
@@ -46,7 +47,17 @@ final private ProductVariantServiceImplementation productVariantServiceImplement
 
             @DeleteMapping("/deleteProductVariant/{id}")
             public String deleteProductVariant(@PathVariable Long id){
-            return productVariantServiceImplementation.deleteProductVariant(id);
+            return productVariantService.deleteProductVariant(id);
+            }
+
+            @GetMapping("/paginated")
+            public List<ProductVariantResponse> getPaginatedProductVariants
+                    (@RequestParam(defaultValue = "0") int page,
+                     @RequestParam(defaultValue = "5") int size,
+                     @RequestParam(defaultValue = "product_variant_price")String sortBy,
+                     @RequestParam(defaultValue = "asc") String direction)
+            {
+              return productVariantService.getPaginatedProductVariants(page,size,sortBy,direction);
             }
 
             @GetMapping("/getProudctVariantById/{id}")

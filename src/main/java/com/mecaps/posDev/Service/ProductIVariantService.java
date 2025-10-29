@@ -5,10 +5,10 @@ import com.mecaps.posDev.Response.ProductVariantResponse;
 
 import java.util.List;
 
-public interface ProductVariantService {
+public interface ProductIVariantService {
     ProductVariantResponse CreateProductVariant(ProductVariantRequest productVariantRequest);
     List<ProductVariantResponse> getAll();
     String deleteProductVariant(Long id);
     ProductVariantResponse updateProductVariant(Long id, ProductVariantRequest productVariantRequest);
-    ProductVariantResponse findByUserId(Long id);
+    List<ProductVariantResponse> getPaginatedProductVariants(int page, int size, String sortBy, String direction);
 }

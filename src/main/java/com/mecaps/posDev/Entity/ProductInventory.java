@@ -12,18 +12,21 @@ import java.time.LocalDateTime;
 public class ProductInventory {
 @Id
 @GeneratedValue(strategy = GenerationType.IDENTITY)
-private int inventory_id;
+private Long inventory_id;
 
 @DateTimeFormat
 @CreationTimestamp
 private LocalDateTime last_updated;
 
+@Column(nullable = false)
 private String location;
+
+@Column(nullable = false)
 private Long quantity;
 
 @ManyToOne
 private Product product_id;
 
 @OneToOne
-private ProductVariant product_variant_id;
+private ProductVariant product_variant;
 }
