@@ -3,28 +3,25 @@ package com.mecaps.posDev.Entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
+@Table(name = "Product")
 @Data
+
 public class Category {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long category_id;
+   private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String category_name;
 
-    @Column(nullable = false)
-    private String category_description;
+    @Column(length = 255)
+    private String description;
 
-    @ManyToOne
-    private Category parent_category;
+    @Column(length = 255)
+    private String product_name;
 
-    @OneToMany(mappedBy = "parent_category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Category> subCategories = new ArrayList<>();
+   @OneToMany
+    private Category category;
 
-    @OneToMany(mappedBy = "category_id", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Product> products = new ArrayList<>();
+
 }

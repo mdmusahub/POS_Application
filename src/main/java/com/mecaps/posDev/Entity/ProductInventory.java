@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 public class ProductInventory {
+
 @Id
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 private Long inventory_id;
