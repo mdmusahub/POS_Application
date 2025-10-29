@@ -72,7 +72,7 @@ public List<ProductVariantResponse> getPaginatedProductVariants(int page, int si
         return productVariantPage.getContent().stream().map(ProductVariantResponse :: new).toList();
 }
 
-public ProductVariantResponse findUserById(Long id){
+public ProductVariantResponse findProductVariantById(Long id){
         ProductVariant productVariant = productVariantRepository.findById(id).orElseThrow(()->new RuntimeException("User not found "));
         return new  ProductVariantResponse(productVariant);
 }

@@ -62,8 +62,8 @@ final ProductIVariantService productVariantService;
             }
 
             @GetMapping("/getProudctVariantById/{id}")
-    public ResponseEntity<ProductVariantResponse> findUserById(@PathVariable Long id){
-        ProductVariantResponse productVariantResponse = productVariantService.findUserById(id);
+    public ResponseEntity<ProductVariantResponse> findProductVariantById(@PathVariable Long id){
+        ProductVariantResponse productVariantResponse = productVariantService.findProductVariantById(id);
         return ResponseEntity.ok(productVariantResponse);
             }
 }
