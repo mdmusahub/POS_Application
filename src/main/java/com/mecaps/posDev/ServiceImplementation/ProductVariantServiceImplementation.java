@@ -54,4 +54,10 @@ ProductVariant save = productVariantRepository.save(productVariant1);
 return new ProductVariantResponse(save);
 }
 
+
+public ProductVariantResponse findByUserId(Long id){
+        ProductVariant productVariant = productVariantRepository.findById(id).orElseThrow(()->new RuntimeException("User not found"));
+        return new ProductVariantResponse(productVariant);
+}
+
 }

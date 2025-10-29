@@ -10,5 +10,5 @@ public interface ProductVariantService {
     List<ProductVariantResponse> getAll();
     String deleteProductVariant(Long id);
     ProductVariantResponse updateProductVariant(Long id, ProductVariantRequest productVariantRequest);
-
+    ProductVariantResponse findByUserId(Long id);
 }

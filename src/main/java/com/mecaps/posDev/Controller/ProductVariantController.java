@@ -48,4 +48,9 @@ final private ProductVariantServiceImplementation productVariantServiceImplement
             public String deleteProductVariant(@PathVariable Long id){
             return productVariantServiceImplementation.deleteProductVariant(id);
             }
+
+            @GetMapping("/getProudctVariantById/{id}")
+    public ProductVariantResponse findUserById(@PathVariable Long id){
+        return productVariantServiceImplementation.findByUserId(id);
+            }
 }
