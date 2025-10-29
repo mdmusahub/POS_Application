@@ -30,7 +30,7 @@ public class ProductController
 
         @PutMapping("/updateProduct/{id}")
         public ProductResponse updateProduct(@PathVariable Long id, @RequestBody ProductRequest req) {
-        return productService.updateProduct(id, req);
+        return productService.updateProduct( id, req);
         }
 
         @GetMapping("/getProduct")

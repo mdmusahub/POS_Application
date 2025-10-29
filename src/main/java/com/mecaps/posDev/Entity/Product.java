@@ -16,8 +16,14 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long product_id;
+
+    @Column(nullable = false)
     private String product_name;
+
+    @Column(nullable = false)
     private String product_description;
+
+    @Column(nullable = false , unique = true)
     private String sku;
 
     @ManyToOne

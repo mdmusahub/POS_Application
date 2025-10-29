@@ -1,8 +1,6 @@
 package com.mecaps.posDev.ServiceImplementation;
 
 import com.mecaps.posDev.Entity.Category;
-import com.mecaps.posDev.Exception.CategoryAlreadyExist;
-import com.mecaps.posDev.Exception.CategoryNotFoundException;
 import com.mecaps.posDev.Repository.CategoryRepository;
 import com.mecaps.posDev.Request.CategoryRequest;
 import com.mecaps.posDev.Response.CategoryResponse;
@@ -21,12 +19,15 @@ public class CategoryServiceImplementation implements CategoryService {
     }
 
     public CategoryResponse createCategory(CategoryRequest req) {
-            categoryRepository.findByCategory_name(req.getCategory_name()).ifPresent(present->{throw new CategoryAlreadyExist("category already found " + req.getCategory_name());
-});
-            Category category1 = categoryRepository.findById(req.getParent_category()).orElseThrow(()->new CategoryNotFoundException("category not Found " + req.getParent_category()));
+
+            Category parent_category = null;
+            if(req.getParent_category() != null){
+               parent_category = categoryRepository.findById(req.getParent_category())
+                       .orElseThrow(()->new RuntimeException("category not Found"));
+            }
             Category category = new Category();
             category.setCategory_name(req.getCategory_name());
-            category.setParent_category(category1);
+            category.setParent_category(parent_category);
             category.setCategory_description(req.getCategory_name());
 
             Category save = categoryRepository.save(category);
@@ -41,7 +42,7 @@ public class CategoryServiceImplementation implements CategoryService {
 
 
     public CategoryResponse updateCategory(Long id, CategoryRequest req) {
-        Category updateCategory = categoryRepository.findById(id).orElseThrow(()->new CategoryNotFoundException("Product not found " + id));
+        Category updateCategory = categoryRepository.findById(id).orElseThrow(()->new RuntimeException("Product not found"));
         updateCategory.setParent_category(updateCategory);
         updateCategory.setCategory_description(req.getCategory_description());
         updateCategory.setCategory_name(req.getCategory_name());
@@ -50,7 +51,7 @@ public class CategoryServiceImplementation implements CategoryService {
     }
 
     public String deleteCategory(Long id) {
-        Category category = categoryRepository.findById(id).orElseThrow(()->new CategoryNotFoundException("Category not found " + id));
+        Category category = categoryRepository.findById(id).orElseThrow(()->new RuntimeException("Category not found"));
         categoryRepository.delete(category);
         return "Category Deleted successfully";
     }
