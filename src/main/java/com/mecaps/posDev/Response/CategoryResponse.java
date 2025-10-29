@@ -15,7 +15,7 @@ public class CategoryResponse {
 
     public CategoryResponse(Category parent_category) {
 
-        this.category_name = parent_category.getCategory_name();
+        this.category_name = parent_category.getCategoryName();
         this.category_description = parent_category.getCategory_description();
     }
 
