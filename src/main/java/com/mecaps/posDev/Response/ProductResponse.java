@@ -20,9 +20,9 @@ public class ProductResponse {
 
 
     public ProductResponse(Product product) {
-        this.product_name = product.getProduct_name();
+        this.product_name = product.getProductName();
         this.product_description = product.getProduct_description();
-        this.product_category = product.getCategory_id().getCategory_name();
+        this.product_category = product.getCategory_id().getCategoryName();
         this.refundable = product.getProduct_variant().getFirst().getRefundable();
     }
 
