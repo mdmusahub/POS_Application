@@ -22,15 +22,15 @@ public class ProductServiceImplementation implements ProductService {
     private final CategoryRepository categoryRepository;
 
 
-    public ProductServiceImplementation(ProductRepository productRepository, ProductVariantRepository productVariantRepository, Category category, CategoryRepository categoryRepository) {
+    public ProductServiceImplementation(ProductRepository productRepository, CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
     }
 
 
     public ProductResponse createProduct(ProductRequest req) {
-        productRepository.findByProductName(req.getProduct_name()).
-        ifPresent(present->{throw  new ProductAlreadyExist("This product is already found " + req.getProduct_name());
+        productRepository.findByProductName(req.getProduct_name())
+                .ifPresent(present->{throw  new ProductAlreadyExist("This product is already found " + req.getProduct_name());
         });
         Product product = new Product();
         Category category = categoryRepository.findById(req.getCategory_id())

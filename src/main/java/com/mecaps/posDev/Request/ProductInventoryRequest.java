@@ -10,8 +10,6 @@ public class ProductInventoryRequest {
 
     private String location;
     private Long quantity;
-
     private Long product_id;
-
     private Long product_variant_id;
 }
