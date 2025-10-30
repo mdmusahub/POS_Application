@@ -42,4 +42,7 @@ public class Product {
     @DateTimeFormat
     @UpdateTimestamp
     private LocalDateTime updated_at;
+
+
+
 }
