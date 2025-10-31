@@ -33,7 +33,7 @@ public class CategoryServiceImplementation implements CategoryService {
             Category category = new Category();
             category.setCategoryName(req.getCategory_name());
             category.setParent_category(parent_category);
-            category.setCategory_description(req.getCategory_name());
+            category.setCategory_description(req.getCategory_description()); // correct getter method
 
             Category save = categoryRepository.save(category);
             return new CategoryResponse(save);
@@ -47,9 +47,15 @@ public class CategoryServiceImplementation implements CategoryService {
 
 
     public CategoryResponse updateCategory(Long id, CategoryRequest req) {
-        Category updateCategory = categoryRepository.findById(id).orElseThrow(()->
-                new CategoryNotFoundException("This Product Id is not found " + id));
-        updateCategory.setParent_category(updateCategory);
+        Category  updateCategory = categoryRepository.findById(id).orElseThrow(()->
+                new CategoryNotFoundException("Category not Found " + id));
+
+        Category parentCategory = null;
+        if(req.getParent_category() != null){
+           parentCategory = categoryRepository.findById(req.getParent_category()).orElseThrow(()->
+                    new CategoryNotFoundException("Parent category not found: " + req.getParent_category())); // add find condition for the parent category for update
+        }
+        updateCategory.setParent_category(parentCategory);
         updateCategory.setCategory_description(req.getCategory_description());
         updateCategory.setCategoryName(req.getCategory_name());
         Category save = categoryRepository.save(updateCategory);

@@ -14,12 +14,12 @@ import java.util.List;
 public class ProductVariantController {
 final ProductVariantService productVariantService;
 
-
-    public ProductVariantController(ProductVariantServiceImplementation productVariantServiceImplementation) {
-        this.productVariantService = productVariantServiceImplementation;
+    public ProductVariantController(ProductIVariantService productVariantService) {
+        this.productVariantService = productVariantService;  // correct the parameter of constructor
     }
 
-              // FOR CREATE //
+
+    // FOR CREATE //
 
             @PostMapping("/createProductVariant")
             public ProductVariantResponse createProductVariant(@RequestBody ProductVariantRequest productVariantRequest){

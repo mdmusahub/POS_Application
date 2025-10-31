@@ -12,7 +12,8 @@ public class ProductVariant {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long product_variant_id;
-    @Column(nullable = false)
+
+    @Column(name = "variant_name", nullable = false)
     private String variantName;
 
     @Column(nullable = false)
@@ -25,6 +26,8 @@ public class ProductVariant {
     private String product_variant_value;
     
     @ManyToOne
+    @JoinColumn(name = "product_id")
+
     private Product product_id;
 
     @OneToOne(mappedBy = "product_variant", cascade = CascadeType.ALL, orphanRemoval = true)

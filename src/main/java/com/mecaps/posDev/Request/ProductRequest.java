@@ -10,6 +10,4 @@ public class ProductRequest {
         private String product_description;
         private String sku;
         private Long category_id;
-        private Long inventory_id;
-        private Long product_variant_id;
 }

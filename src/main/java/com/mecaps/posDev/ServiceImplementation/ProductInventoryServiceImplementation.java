@@ -39,24 +39,21 @@ public class ProductInventoryServiceImplementation implements ProductInventorySe
                 .orElseThrow(()-> new ProductVariantNotFoundExpection("This variant Id is not found " + request.getProduct_variant_id()));
 
         ProductInventory inventory = new ProductInventory();
-
+        inventory.setProduct_variant(variant);  // add variant id in inventory
         inventory.setProduct_id(product);
         inventory.setQuantity(request.getQuantity());
         inventory.setLocation(request.getLocation());
 
-     ProductInventory save = productInventoryRepository.save(inventory);
+
+        ProductInventory save = productInventoryRepository.save(inventory);
 
         return new ProductInventoryResponse(save);
     }
 
 
+    public String updatedInventory(Long id,ProductInventoryRequest request){
 
-
-
-
-    public String updatedInvetory(Long id,ProductInventoryRequest request){
-
-        ProductInventory productinventory = productInventoryRepository.findById(id)
+        ProductInventory productInventory = productInventoryRepository.findById(id)  // correct variable name of productInventory
                 .orElseThrow(()-> new ProductInventoryNotFoundExpection("This product inventory Id is not found " + id));
 
         Product product = productRepository
@@ -67,33 +64,25 @@ public class ProductInventoryServiceImplementation implements ProductInventorySe
                 .findById(request.getProduct_variant_id())
                 .orElseThrow(()-> new ProductVariantNotFoundExpection("This variant Id is not found " + request.getProduct_variant_id()));
 
-         productinventory.setLocation(request.getLocation());
-         productinventory.setQuantity(request.getQuantity());
-         productinventory.setProduct_id(product);
-         productinventory.setProduct_variant(variant);
+         productInventory.setLocation(request.getLocation());
+         productInventory.setQuantity(request.getQuantity());
+         productInventory.setProduct_id(product);
+         productInventory.setProduct_variant(variant);
+         productInventoryRepository.save(productInventory);  // add save of productInventory
 
          return "Inventory updated successfully";
     }
 
-
-
 public List<ProductInventoryResponse> getAllProducts(){
-
       List<ProductInventory> productInventoryList =  productInventoryRepository.findAll();
-
        return productInventoryList.stream().map(ProductInventoryResponse :: new).toList();
-
 }
-
-
-
 
 public String deleteProduct(Long id){
-productInventoryRepository.deleteById(id);
-return "deleted successfully";
-
+    ProductInventory inventory = productInventoryRepository.findById(id)  // add check method before deletion
+            .orElseThrow(() -> new ProductInventoryNotFoundExpection("Inventory not found: " + id));
+    productInventoryRepository.delete(inventory);
+  return "deleted successfully";
 }
-
-
 
 }

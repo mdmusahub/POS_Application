@@ -9,10 +9,9 @@ public interface CategoryService {
     
 
     CategoryResponse createCategory(CategoryRequest req);
-
     List<CategoryResponse> getCategory();
-
+    String deleteCategory(Long id);
     CategoryResponse updateCategory(Long id, CategoryRequest req);
 
-    String deleteCategory(Long id);
+
 }
