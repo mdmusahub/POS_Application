@@ -2,7 +2,7 @@ package com.mecaps.posDev.Controller;
 
 import com.mecaps.posDev.Request.ProductVariantRequest;
 import com.mecaps.posDev.Response.ProductVariantResponse;
-import com.mecaps.posDev.Service.ProductIVariantService;
+import com.mecaps.posDev.Service.ProductVariantService;
 import com.mecaps.posDev.ServiceImplementation.ProductVariantServiceImplementation;
 
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/productVariant")
 public class ProductVariantController {
-final ProductIVariantService productVariantService;
+final ProductVariantService productVariantService;
 
 
     public ProductVariantController(ProductVariantServiceImplementation productVariantServiceImplementation) {
