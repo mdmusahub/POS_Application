@@ -16,16 +16,13 @@ public class ProductResponse {
     private String product_name;
     private String product_description;
     private String product_category;
-    private Boolean refundable;
 
 
     public ProductResponse(Product product) {
         this.product_name = product.getProductName();
         this.product_description = product.getProduct_description();
-        this.product_category = product.getCategory_id().getCategoryName() ;
-        this.refundable = (product.getProduct_variant() != null && !product.getProduct_variant().isEmpty())
-                ? product.getProduct_variant().get(0).getRefundable()
-                : null;     }
+        this.product_category = product.getCategory_id().getCategoryName();
 
 
+    }
 }

@@ -22,6 +22,7 @@ private LocalDateTime last_updated;
 @Column(nullable = false)
 private String location;
 
+
 @Column(nullable = false)
 private Long quantity;
 
@@ -29,5 +30,7 @@ private Long quantity;
 private Product product_id;
 
 @OneToOne
+@JoinColumn(name = "variant_id")
+
 private ProductVariant product_variant;
 }

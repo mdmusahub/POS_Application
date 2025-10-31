@@ -9,7 +9,7 @@ import com.mecaps.posDev.Repository.ProductRepository;
 import com.mecaps.posDev.Repository.ProductVariantRepository;
 import com.mecaps.posDev.Request.ProductVariantRequest;
 import com.mecaps.posDev.Response.ProductVariantResponse;
-import com.mecaps.posDev.Service.ProductIVariantService;
+import com.mecaps.posDev.Service.ProductVariantService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ProductVariantServiceImplementation implements ProductIVariantService {
+public class ProductVariantServiceImplementation implements ProductVariantService {
 
     private final ProductVariantRepository productVariantRepository;
     private final ProductRepository productRepository;
