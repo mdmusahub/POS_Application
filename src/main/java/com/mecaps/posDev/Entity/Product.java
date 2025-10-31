@@ -17,7 +17,7 @@ public class Product {
     private Long product_id;
 
     @Column(nullable = false)
-    private String product_name;
+    private String productName;
 
     @Column(nullable = false)
     private String product_description;

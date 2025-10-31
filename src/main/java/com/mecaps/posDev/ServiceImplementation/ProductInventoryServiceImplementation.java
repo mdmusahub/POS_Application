@@ -3,15 +3,19 @@ package com.mecaps.posDev.ServiceImplementation;
 import com.mecaps.posDev.Entity.Product;
 import com.mecaps.posDev.Entity.ProductInventory;
 import com.mecaps.posDev.Entity.ProductVariant;
+import com.mecaps.posDev.Exception.ProductInventoryNotFoundExpection;
+import com.mecaps.posDev.Exception.ProductNotFoundExpection;
+import com.mecaps.posDev.Exception.ProductVariantNotFoundExpection;
 import com.mecaps.posDev.Repository.ProductInventoryRepository;
 import com.mecaps.posDev.Repository.ProductRepository;
 import com.mecaps.posDev.Repository.ProductVariantRepository;
 import com.mecaps.posDev.Request.ProductInventoryRequest;
 import com.mecaps.posDev.Response.ProductInventoryResponse;
 import com.mecaps.posDev.Service.ProductInventoryService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
 public class ProductInventoryServiceImplementation implements ProductInventoryService {
 
     private final ProductInventoryRepository productInventoryRepository;
@@ -28,16 +32,15 @@ public class ProductInventoryServiceImplementation implements ProductInventorySe
     public ProductInventoryResponse createInventory(ProductInventoryRequest request){
       Product product = productRepository
               .findById(request.getProduct_id())
-              .orElseThrow(()-> new RuntimeException("product not found"));
+              .orElseThrow(()-> new ProductNotFoundExpection("This product Id is not found " + request.getProduct_id()));
 
         ProductVariant variant = productVariantRepository
                 .findById(request.getProduct_variant_id())
-                .orElseThrow(()-> new RuntimeException("Variant not found"));
+                .orElseThrow(()-> new ProductVariantNotFoundExpection("This variant Id is not found " + request.getProduct_variant_id()));
 
         ProductInventory inventory = new ProductInventory();
 
         inventory.setProduct_id(product);
-        inventory.setProduct_variant_id(variant);
         inventory.setQuantity(request.getQuantity());
         inventory.setLocation(request.getLocation());
 
@@ -54,20 +57,20 @@ public class ProductInventoryServiceImplementation implements ProductInventorySe
     public String updatedInvetory(Long id,ProductInventoryRequest request){
 
         ProductInventory productinventory = productInventoryRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("id not found"));
+                .orElseThrow(()-> new ProductInventoryNotFoundExpection("This product inventory Id is not found " + id));
 
         Product product = productRepository
                 .findById(request.getProduct_id())
-                .orElseThrow(()-> new RuntimeException("product not found"));
+                .orElseThrow(()-> new ProductNotFoundExpection("This product Id is not found " + request.getProduct_id()));
 
         ProductVariant variant = productVariantRepository
                 .findById(request.getProduct_variant_id())
-                .orElseThrow(()-> new RuntimeException("Variant not found"));
+                .orElseThrow(()-> new ProductVariantNotFoundExpection("This variant Id is not found " + request.getProduct_variant_id()));
 
          productinventory.setLocation(request.getLocation());
          productinventory.setQuantity(request.getQuantity());
          productinventory.setProduct_id(product);
-         productinventory.setProduct_variant_id(variant);
+         productinventory.setProduct_variant(variant);
 
          return "Inventory updated successfully";
     }

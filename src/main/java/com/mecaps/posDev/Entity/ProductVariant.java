@@ -13,7 +13,7 @@ public class ProductVariant {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long product_variant_id;
     @Column(nullable = false)
-    private String product_variant_name;
+    private String variantName;
 
     @Column(nullable = false)
     private Double product_variant_price;

@@ -1,6 +1,5 @@
 package com.mecaps.posDev.Response;
 
-import com.mecaps.posDev.Entity.Category;
 import com.mecaps.posDev.Entity.Product;
 import com.mecaps.posDev.Entity.ProductInventory;
 import com.mecaps.posDev.Entity.ProductVariant;
@@ -16,14 +15,14 @@ public class ProductResponse {
 
     private String product_name;
     private String product_description;
-    private Category product_category;
+    private String product_category;
     private Boolean refundable;
 
 
     public ProductResponse(Product product) {
-        this.product_name = product.getProduct_name();
+        this.product_name = product.getProductName();
         this.product_description = product.getProduct_description();
-        this.product_category = product.getCategory_id().getCategory();
+        this.product_category = product.getCategory_id().getCategoryName();
         this.refundable = product.getProduct_variant().getFirst().getRefundable();
     }
 
