@@ -12,6 +12,7 @@ import com.mecaps.posDev.Repository.ProductVariantRepository;
 import com.mecaps.posDev.Request.ProductInventoryRequest;
 import com.mecaps.posDev.Response.ProductInventoryResponse;
 import com.mecaps.posDev.Service.ProductInventoryService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -77,11 +78,12 @@ public List<ProductInventoryResponse> getAllProducts(){
       List<ProductInventory> productInventoryList =  productInventoryRepository.findAll();
        return productInventoryList.stream().map(ProductInventoryResponse :: new).toList();
 }
-
+    @Transactional
 public String deleteProduct(Long id){
     ProductInventory inventory = productInventoryRepository.findById(id)  // add check method before deletion
             .orElseThrow(() -> new ProductInventoryNotFoundExpection("Inventory not found: " + id));
     productInventoryRepository.delete(inventory);
+
   return "deleted successfully";
 }
 
