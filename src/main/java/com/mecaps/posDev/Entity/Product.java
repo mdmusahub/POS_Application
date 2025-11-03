@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Entity
 @Data
 public class Product {
@@ -18,7 +17,7 @@ public class Product {
     private Long product_id;
 
     @Column(nullable = false)
-    private String productName;
+    private String product_name;
 
     @Column(nullable = false)
     private String product_description;
@@ -43,10 +42,4 @@ public class Product {
     @DateTimeFormat
     @UpdateTimestamp
     private LocalDateTime updated_at;
-
-//    @OneToMany(mappedBy = "product_id", cascade = CascadeType.ALL, orphanRemoval = true)
-//private List<OrderItems> items = new ArrayList();
-
-
-
 }
