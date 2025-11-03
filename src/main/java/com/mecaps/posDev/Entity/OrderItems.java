@@ -19,6 +19,9 @@ public class OrderItems {
     @ManyToOne
     private Product product_id;
 
+    @ManyToOne
+    private ProductVariant product_variant_id;
+
 
 
 }

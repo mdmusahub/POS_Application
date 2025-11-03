@@ -19,37 +19,24 @@ public class ProductInventoryController {
         this.productInventoryService = productInventoryService;
     }
 
-
-
     @PostMapping("/create")
     public ProductInventoryResponse createProductInventory(@RequestBody ProductInventoryRequest request){
        return productInventoryService.createInventory(request);
-
     }
 
-
-
-
-    @PutMapping("/update")
+    @PutMapping("/update/{id}") // add id variable
     public String updateProductInventory(@PathVariable Long id , @RequestBody ProductInventoryRequest request){
-        return productInventoryService.updatedInvetory(id,request);
+        return productInventoryService.updatedInventory(id,request);
     }
-
-
-
 
     @GetMapping("/get")
     public List<ProductInventoryResponse> getAll(){
         return productInventoryService.getAllProducts();
     }
 
-
-
-
     @DeleteMapping("/delete/{id}")
     public String deleteInventory(@PathVariable Long id){
         return  productInventoryService.deleteProduct(id);
-
     }
 
 

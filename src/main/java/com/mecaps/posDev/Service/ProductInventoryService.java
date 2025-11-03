@@ -10,7 +10,7 @@ public interface ProductInventoryService  {
 
     ProductInventoryResponse createInventory(ProductInventoryRequest request);
 
-    public String updatedInvetory(Long id,ProductInventoryRequest request);
+    String updatedInventory(Long id,ProductInventoryRequest request);
 
     List<ProductInventoryResponse> getAllProducts();
 

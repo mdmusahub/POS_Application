@@ -18,18 +18,19 @@ public class Product {
     private Long product_id;
 
     @Column(nullable = false)
-    private String product_name;
+    private String productName;
 
     @Column(nullable = false)
     private String product_description;
 
     @Column(nullable = false , unique = true)
+
     private String sku;
 
     @ManyToOne
     private Category category_id;
 
-    @OneToMany(mappedBy = "product_variant_id",  cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product_id",  cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductVariant> product_variant = new ArrayList<>();
 
     @OneToMany(mappedBy = "product_id", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -42,6 +43,9 @@ public class Product {
     @DateTimeFormat
     @UpdateTimestamp
     private LocalDateTime updated_at;
+
+//    @OneToMany(mappedBy = "product_id", cascade = CascadeType.ALL, orphanRemoval = true)
+//private List<OrderItems> items = new ArrayList();
 
 
 

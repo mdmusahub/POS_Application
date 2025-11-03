@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
-public class GobalExpection {
+public class GlobalException  {  //  // fixed class name
 
     @ExceptionHandler(ProductNotFoundExpection.class)
     public ResponseEntity<ErrorResponse>  handleProductNotFound(ProductNotFoundExpection expextion , HttpServletRequest httpServletRequest){
-        ErrorResponse errorResponse=new ErrorResponse(
+        ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.NOT_FOUND.value(),
                 HttpStatus.NOT_FOUND.getReasonPhrase() ,
@@ -22,18 +22,18 @@ public class GobalExpection {
 
         );
 
-        return new ResponseEntity(errorResponse , HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errorResponse , HttpStatus.NOT_FOUND);
 
     }
 
     @ExceptionHandler(ProductAlreadyExist.class)
 
-    public ResponseEntity<ErrorResponse> handleProductFound(ProductAlreadyExist expection , HttpServletRequest httpServletRequest){
-        ErrorResponse errorResponse=new ErrorResponse(
+    public ResponseEntity<ErrorResponse> handleProductFound(ProductAlreadyExist exception , HttpServletRequest httpServletRequest){
+        ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.CONFLICT.value(),
                 HttpStatus.CONFLICT.getReasonPhrase(),
-                expection.getMessage(),
+                exception.getMessage(),  // correct spelling of exception
                 httpServletRequest.getRequestURI()
 
         );
@@ -58,22 +58,22 @@ public class GobalExpection {
     }
 
     @ExceptionHandler(CategoryAlreadyExist.class)
-    public ResponseEntity<ErrorResponse> handleCategoryAlreadyExist(CategoryAlreadyExist expection , HttpServletRequest httpServletRequest){
-        ErrorResponse errorResponse=new ErrorResponse(
+    public ResponseEntity<ErrorResponse> handleCategoryAlreadyExist(CategoryAlreadyExist exception , HttpServletRequest httpServletRequest){
+        ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.CONFLICT.value(),
                 HttpStatus.CONFLICT.getReasonPhrase(),
-                expection.getMessage(),
+                exception.getMessage(),
                 httpServletRequest.getRequestURI()
         );
 
-        return new ResponseEntity<>(errorResponse , HttpStatus.CONFLICT);
+        return new ResponseEntity<>(errorResponse , HttpStatus.CONFLICT); // correct Http error code
 
     }
 
     @ExceptionHandler(ProductInventoryNotFoundExpection.class)
     public ResponseEntity<ErrorResponse> handleProductInventoryNotFound(ProductInventoryNotFoundExpection expection , HttpServletRequest httpServletRequest){
-        ErrorResponse errorResponse=new ErrorResponse(
+        ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.NOT_FOUND.value(),
                 HttpStatus.NOT_FOUND.getReasonPhrase(),
@@ -86,25 +86,25 @@ public class GobalExpection {
     }
 
     @ExceptionHandler(ProductInventoryAlreadyExist.class)
-    public ResponseEntity<ErrorResponse> handleProductInventoryAlreadyExist(ProductInventoryAlreadyExist expection , HttpServletRequest httpServletRequest){
-        ErrorResponse errorResponse=new ErrorResponse(
+    public ResponseEntity<ErrorResponse> handleProductInventoryAlreadyExist(ProductInventoryAlreadyExist exception , HttpServletRequest httpServletRequest){
+        ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),
-                HttpStatus.NOT_FOUND.value(),
-                HttpStatus.NOT_FOUND.getReasonPhrase(),
-                expection.getMessage(),
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                exception.getMessage(),
                 httpServletRequest.getRequestURI()
         );
 
-        return new ResponseEntity<>(errorResponse , HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errorResponse , HttpStatus.CONFLICT);
 
     }
     @ExceptionHandler(ProductVariantNotFoundExpection.class)
-    public ResponseEntity<ErrorResponse> handleProductVariant(ProductVariantNotFoundExpection expection , HttpServletRequest httpServletRequest){
-     ErrorResponse errorResponse=new ErrorResponse(
+    public ResponseEntity<ErrorResponse> handleProductVariant(ProductVariantNotFoundExpection exception , HttpServletRequest httpServletRequest){
+     ErrorResponse errorResponse = new ErrorResponse(
           LocalDateTime.now(),
           HttpStatus.NOT_FOUND.value(),
           HttpStatus.NOT_FOUND.getReasonPhrase(),
-          expection.getMessage(),
+          exception.getMessage(),
           httpServletRequest.getRequestURI()
      );
 
@@ -113,12 +113,12 @@ public class GobalExpection {
     }
 
     @ExceptionHandler(ProductVariantAlreadyExist.class)
-    public ResponseEntity<ErrorResponse> handleProductVariantAlreadyExist(ProductAlreadyExist expection , HttpServletRequest httpServletRequest){
-        ErrorResponse errorResponse=new ErrorResponse(
+    public ResponseEntity<ErrorResponse> handleProductVariantAlreadyExist(ProductAlreadyExist exception , HttpServletRequest httpServletRequest){
+        ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.CONFLICT.value(),
                 HttpStatus.CONFLICT.getReasonPhrase(),
-                expection.getMessage(),
+                exception.getMessage(),
                 httpServletRequest.getRequestURI()
 
         );
@@ -128,12 +128,12 @@ public class GobalExpection {
     }
 
     @ExceptionHandler(ResourceNotFoundExpection.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundExpection expection , HttpServletRequest httpServletRequest){
-     ErrorResponse errorResponse=new ErrorResponse(
+    public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundExpection exception , HttpServletRequest httpServletRequest){
+     ErrorResponse errorResponse = new ErrorResponse(
              LocalDateTime.now(),
              HttpStatus.NOT_FOUND.value(),
              HttpStatus.NOT_FOUND.getReasonPhrase(),
-             expection.getMessage(),
+             exception.getMessage(),
              httpServletRequest.getRequestURI()
      ) ;
 
