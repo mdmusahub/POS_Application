@@ -35,6 +35,9 @@ public class Product {
     @OneToMany(mappedBy = "product_id", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductInventory> inventories = new ArrayList<>();
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems = new ArrayList<>();
+
     @DateTimeFormat
     @CreationTimestamp
     private LocalDateTime created_at;
