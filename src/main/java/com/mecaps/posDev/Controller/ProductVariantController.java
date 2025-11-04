@@ -14,7 +14,7 @@ import java.util.List;
 public class ProductVariantController {
 final ProductVariantService productVariantService;
 
-    public ProductVariantController(ProductIVariantService productVariantService) {
+    public ProductVariantController(ProductVariantService productVariantService) {
         this.productVariantService = productVariantService;  // correct the parameter of constructor
     }
 

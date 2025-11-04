@@ -11,5 +11,5 @@ public class CategoryRequest {
 
     private String category_name;
     private Long parent_category;
-        private String category_description;
+    private String category_description;
 }

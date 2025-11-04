@@ -29,5 +29,6 @@ private Long quantity;
 private Product product_id;
 
 @OneToOne
+@JoinColumn(unique = false)
 private ProductVariant product_variant;
 }
