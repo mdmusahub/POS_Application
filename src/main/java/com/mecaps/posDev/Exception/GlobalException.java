@@ -12,12 +12,12 @@ import java.time.LocalDateTime;
 public class GlobalException  {  //  // fixed class name
 
     @ExceptionHandler(ProductNotFoundExpection.class)
-    public ResponseEntity<ErrorResponse>  handleProductNotFound(ProductNotFoundExpection expextion , HttpServletRequest httpServletRequest){
+    public ResponseEntity<ErrorResponse>  handleProductNotFound(ProductNotFoundExpection expection , HttpServletRequest httpServletRequest){
         ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.NOT_FOUND.value(),
                 HttpStatus.NOT_FOUND.getReasonPhrase() ,
-                expextion.getMessage(),
+                expection.getMessage(),
                 httpServletRequest.getRequestURI()
 
         );
@@ -141,5 +141,32 @@ public class GlobalException  {  //  // fixed class name
 
     }
 
+    @ExceptionHandler(CustomerNotFound.class)
+    public ResponseEntity<ErrorResponse> handleCustomerNotFound(CustomerNotFound expection , HttpServletRequest httpServletRequest){
+        ErrorResponse errorResponse= new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                expection.getMessage(),
+                httpServletRequest.getRequestURI()
+        );
+        return new ResponseEntity<>(errorResponse , HttpStatus.NOT_FOUND) ;
+
+
+    }
+
+    @ExceptionHandler(CustomerAlreadyExist.class)
+    public ResponseEntity<ErrorResponse> handleCustomerAlreadyExist(CustomerNotFound expection , HttpServletRequest httpServletRequest){
+        ErrorResponse errorResponse= new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                expection.getMessage(),
+                httpServletRequest.getRequestURI()
+        );
+        return new ResponseEntity<>(errorResponse , HttpStatus.CONFLICT) ;
+
+
+    }
 
 }

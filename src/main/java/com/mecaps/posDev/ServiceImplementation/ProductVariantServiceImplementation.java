@@ -43,7 +43,6 @@ public class ProductVariantServiceImplementation implements ProductVariantServic
         productVariant.setProduct_variant_price(productVariantRequest.getProduct_variant_price()); // correct the name of parameter
         productVariant.setRefundable(productVariantRequest.getRefundable());
         productVariant.setProduct_variant_value(productVariantRequest.getProduct_variant_value());
-        productVariant.setProduct_id(product);  // add product id
         ProductVariant pv = productVariantRepository.save(productVariant);
         return new ProductVariantResponse(pv);
     }

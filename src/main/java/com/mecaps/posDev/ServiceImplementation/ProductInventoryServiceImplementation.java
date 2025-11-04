@@ -12,7 +12,6 @@ import com.mecaps.posDev.Repository.ProductVariantRepository;
 import com.mecaps.posDev.Request.ProductInventoryRequest;
 import com.mecaps.posDev.Response.ProductInventoryResponse;
 import com.mecaps.posDev.Service.ProductInventoryService;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,9 +30,9 @@ public class ProductInventoryServiceImplementation implements ProductInventorySe
 
 
     public ProductInventoryResponse createInventory(ProductInventoryRequest request){
-      Product product = productRepository
-              .findById(request.getProduct_id())
-              .orElseThrow(()-> new ProductNotFoundExpection("This product Id is not found " + request.getProduct_id()));
+        Product product = productRepository
+                .findById(request.getProduct_id())
+                .orElseThrow(()-> new ProductNotFoundExpection("This product Id is not found " + request.getProduct_id()));
 
         ProductVariant variant = productVariantRepository
                 .findById(request.getProduct_variant_id())
@@ -65,26 +64,25 @@ public class ProductInventoryServiceImplementation implements ProductInventorySe
                 .findById(request.getProduct_variant_id())
                 .orElseThrow(()-> new ProductVariantNotFoundExpection("This variant Id is not found " + request.getProduct_variant_id()));
 
-         productInventory.setLocation(request.getLocation());
-         productInventory.setQuantity(request.getQuantity());
-         productInventory.setProduct_id(product);
-         productInventory.setProduct_variant(variant);
-         productInventoryRepository.save(productInventory);  // add save of productInventory
+        productInventory.setLocation(request.getLocation());
+        productInventory.setQuantity(request.getQuantity());
+        productInventory.setProduct_id(product);
+        productInventory.setProduct_variant(variant);
+        productInventoryRepository.save(productInventory);  // add save of productInventory
 
-         return "Inventory updated successfully";
+        return "Inventory updated successfully";
     }
 
-public List<ProductInventoryResponse> getAllProducts(){
-      List<ProductInventory> productInventoryList =  productInventoryRepository.findAll();
-       return productInventoryList.stream().map(ProductInventoryResponse :: new).toList();
-}
-    @Transactional
-public String deleteProduct(Long id){
-    ProductInventory inventory = productInventoryRepository.findById(id)  // add check method before deletion
-            .orElseThrow(() -> new ProductInventoryNotFoundExpection("Inventory not found: " + id));
-    productInventoryRepository.delete(inventory);
+    public List<ProductInventoryResponse> getAllProducts(){
+        List<ProductInventory> productInventoryList =  productInventoryRepository.findAll();
+        return productInventoryList.stream().map(ProductInventoryResponse :: new).toList();
+    }
 
-  return "deleted successfully";
-}
+    public String deleteProduct(Long id){
+        ProductInventory inventory = productInventoryRepository.findById(id)  // add check method before deletion
+                .orElseThrow(() -> new ProductInventoryNotFoundExpection("Inventory not found: " + id));
+        productInventoryRepository.delete(inventory);
+        return "deleted successfully";
+    }
 
 }
