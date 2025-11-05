@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class GlobalException  {  //  // fixed class name
 
-    @ExceptionHandler(ProductNotFoundExpection.class)
-    public ResponseEntity<ErrorResponse>  handleProductNotFound(ProductNotFoundExpection expextion , HttpServletRequest httpServletRequest){
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ErrorResponse>  handleProductNotFound(ProductNotFoundException expextion , HttpServletRequest httpServletRequest){
         ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.NOT_FOUND.value(),
@@ -71,8 +71,8 @@ public class GlobalException  {  //  // fixed class name
 
     }
 
-    @ExceptionHandler(ProductInventoryNotFoundExpection.class)
-    public ResponseEntity<ErrorResponse> handleProductInventoryNotFound(ProductInventoryNotFoundExpection expection , HttpServletRequest httpServletRequest){
+    @ExceptionHandler(ProductInventoryNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleProductInventoryNotFound(ProductInventoryNotFoundException expection , HttpServletRequest httpServletRequest){
         ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.NOT_FOUND.value(),
@@ -98,8 +98,8 @@ public class GlobalException  {  //  // fixed class name
         return new ResponseEntity<>(errorResponse , HttpStatus.CONFLICT);
 
     }
-    @ExceptionHandler(ProductVariantNotFoundExpection.class)
-    public ResponseEntity<ErrorResponse> handleProductVariant(ProductVariantNotFoundExpection exception , HttpServletRequest httpServletRequest){
+    @ExceptionHandler(ProductVariantNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleProductVariant(ProductVariantNotFoundException exception , HttpServletRequest httpServletRequest){
      ErrorResponse errorResponse = new ErrorResponse(
           LocalDateTime.now(),
           HttpStatus.NOT_FOUND.value(),
@@ -127,8 +127,8 @@ public class GlobalException  {  //  // fixed class name
 
     }
 
-    @ExceptionHandler(ResourceNotFoundExpection.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundExpection exception , HttpServletRequest httpServletRequest){
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException exception , HttpServletRequest httpServletRequest){
      ErrorResponse errorResponse = new ErrorResponse(
              LocalDateTime.now(),
              HttpStatus.NOT_FOUND.value(),

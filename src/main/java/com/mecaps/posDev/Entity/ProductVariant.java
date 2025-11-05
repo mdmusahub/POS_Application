@@ -37,4 +37,5 @@ public class ProductVariant {
     @OneToOne(mappedBy = "product_variant", cascade = CascadeType.ALL, orphanRemoval = true)
     private Discount discount;
 
+
 }

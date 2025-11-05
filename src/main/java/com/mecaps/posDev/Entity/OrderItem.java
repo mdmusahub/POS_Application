@@ -16,9 +16,14 @@ public class OrderItem {
     private Long quantity;
 
     private Double total_price;
+    private Double gstRate;
+    private Double gstAmount;
 
     @Column(nullable = false)
     private Double unit_price;
+
+    @ManyToOne
+    private Order order;
 
     @ManyToOne
     private Product product;

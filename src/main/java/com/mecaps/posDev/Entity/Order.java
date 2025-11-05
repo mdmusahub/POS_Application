@@ -10,6 +10,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -36,6 +38,9 @@ public class Order {
     @ManyToOne
     private Customer customer;
     private String user_phone_number;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL,  orphanRemoval = true)
+    private List<OrderItem> order_items = new ArrayList<>();
 
     @DateTimeFormat
     @CreationTimestamp

@@ -29,5 +29,5 @@ private Long quantity;
 private Product product_id;
 
 @OneToOne
-private ProductVariant product_variant;
+private ProductVariant productVariant;
 }

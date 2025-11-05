@@ -1,6 +1,5 @@
 package com.mecaps.posDev.Request;
 
-import com.mecaps.posDev.Entity.OrderItem;
 import com.mecaps.posDev.Enums.OrderStatus;
 import com.mecaps.posDev.Enums.PaymentMode;
 import lombok.Getter;

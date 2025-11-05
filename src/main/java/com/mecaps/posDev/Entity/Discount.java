@@ -30,6 +30,6 @@ public class Discount {
     private WaiverMode waiver_mode;
 
     @OneToOne
-    private ProductVariant product_variant;
+    private ProductVariant productVariant;
 
 }
