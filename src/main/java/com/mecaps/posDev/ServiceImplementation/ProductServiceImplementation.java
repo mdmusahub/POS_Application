@@ -36,6 +36,7 @@ public class ProductServiceImplementation implements ProductService {
         .orElseThrow(() -> new CategoryNotFoundException("This Category Id is not found " + req.getCategory_id()));
         product.setCategory_id(category);
         product.setProductName(req.getProduct_name());
+        product.setSku(req.getSku());
         product.setProduct_description(req.getProduct_description());
         Product save = productRepository.save(product);
         return new ProductResponse(save);
