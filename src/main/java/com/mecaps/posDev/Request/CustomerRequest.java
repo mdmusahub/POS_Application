@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CustomerRequest {
-    private String email;
-    private String phone_number;
+
+    private String email ;
+    private  String phoneNumber ;
 }
