@@ -1,6 +1,9 @@
 package com.mecaps.posDev.Response;
 
 import com.mecaps.posDev.Entity.ProductInventory;
+import lombok.Getter;
+import lombok.Setter;
+
 
 public class ProductInventoryResponse {
 
