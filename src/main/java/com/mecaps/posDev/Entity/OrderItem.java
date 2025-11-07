@@ -16,11 +16,27 @@ public class OrderItem {
     private Long quantity;
 
     private Double total_price;
-    private Double gstRate;
-    private Double gstAmount;
 
     @Column(nullable = false)
     private Double unit_price;
+
+    // 🧾 --- GST / Tax Details ---
+    @Column(nullable = false)
+    private Double gstRate;      // GST rate applied (e.g., 5, 12, 18, 28)
+
+    @Column(nullable = false)
+    private Double gstAmount;    // Total GST amount for this item (CGST + SGST)
+
+    @Column(nullable = false)
+    private Double c_gstAmount;   // Central GST part
+
+    @Column(nullable = false)
+    private Double s_gstAmount;   // State GST part
+
+    // Optional: reference back to which GST rule was used
+    @ManyToOne
+    @JoinColumn(name = "id")
+    private GstTax gstTax;
 
     @ManyToOne
     private Order order;

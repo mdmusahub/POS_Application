@@ -13,7 +13,7 @@ public class OrderRequest {
     private String cash_amount;
     private String online_amount;
     private OrderStatus order_status;
-    private Double tax;
     private String user_phone_number;
+    private String user_email;
     private List<OrderItemRequest> order_itemRequest;
 }

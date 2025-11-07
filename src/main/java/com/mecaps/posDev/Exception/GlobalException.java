@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.security.PublicKey;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
@@ -140,6 +141,20 @@ public class GlobalException  {  //  // fixed class name
     return new ResponseEntity<>(errorResponse , HttpStatus.NOT_FOUND);
 
     }
+
+    @ExceptionHandler(OutOfStockException.class)
+    public ResponseEntity<ErrorResponse> handleOutOfStock(OutOfStockException exception , HttpServletRequest httpServletRequest){
+        ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                exception.getMessage(),
+                httpServletRequest.getRequestURI()
+        );
+        return new ResponseEntity<>(errorResponse , HttpStatus.CONFLICT) ;
+    }
+
+
 
 
 }

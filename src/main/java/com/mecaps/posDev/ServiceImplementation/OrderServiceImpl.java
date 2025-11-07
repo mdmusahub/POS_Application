@@ -2,8 +2,10 @@ package com.mecaps.posDev.ServiceImplementation;
 
 import com.mecaps.posDev.Entity.*;
 import com.mecaps.posDev.Enums.WaiverMode;
+import com.mecaps.posDev.Exception.OutOfStockException;
 import com.mecaps.posDev.Exception.ProductNotFoundException;
 import com.mecaps.posDev.Exception.ProductVariantNotFoundException;
+import com.mecaps.posDev.Exception.ResourceNotFoundException;
 import com.mecaps.posDev.Repository.*;
 import com.mecaps.posDev.Request.OrderItemRequest;
 import com.mecaps.posDev.Request.OrderRequest;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl {
@@ -22,7 +25,9 @@ private final ProductRepository productRepository;
 private final CustomerRepository customerRepository;
 private final ProductVariantRepository productVariantRepository;
 private final DiscountRepository discountRepository;
+private final GstTaxRepository gstTaxRepository;
 private final OrderItemRepository orderItemRepository;
+private final ProductInventoryRepository productInventoryRepository;
 
 
 // create order
@@ -31,24 +36,19 @@ public String createOrder(OrderRequest orderRequest) {
             orElseGet(()-> {
                 Customer newCustomer = new Customer();
                 newCustomer.setPhoneNumber(orderRequest.getUser_phone_number());
-                return newCustomer;
+                newCustomer.setEmail(orderRequest.getUser_email());
+                return customerRepository.save(newCustomer);
             });
 
     Order order = new Order();
     order.setCustomer(customer);
     order.setUser_phone_number(orderRequest.getUser_phone_number());
+    order.setUser_email(orderRequest.getUser_email());
     order.setOrder_status(orderRequest.getOrder_status());
     order.setPayment_mode(orderRequest.getPaymentMode());
     order.setCash_amount(orderRequest.getCash_amount());
     order.setOnline_amount(orderRequest.getOnline_amount());
-    order.setTax(orderRequest.getTax());
-    order.setDiscount(0d);
-    order.setTotal_amount(0d);
 
-
-    double totalWithoutTax = 0d;
-    double totalTax = 0d;
-    double taxPercent = (orderRequest.getTax() != null) ? orderRequest.getTax() : 0d;
 
 
     // we are creating and setting orderItem in order
@@ -59,32 +59,74 @@ public String createOrder(OrderRequest orderRequest) {
         ProductVariant productVariant = productVariantRepository.findById(itemRequest.getProduct_variant_id())
                 .orElseThrow(()-> new ProductVariantNotFoundException("Product Variant Not Found"));
 
+        Category category = product.getCategory_id();
+
+        GstTax gstTax = gstTaxRepository.findByCategory(category)
+                .orElseGet(() -> {
+                    Category parent = category.getParent_category();
+                    if (parent != null) {
+                        return gstTaxRepository.findByCategory(parent)
+                                .orElseThrow(() -> new RuntimeException(
+                                        "GST not found for category or parent: " + category.getCategoryName()
+                                ));
+                    }
+                    throw new RuntimeException("No GST defined for category: " + category.getCategoryName());
+                });
+
+
+        // 🧩 Step 5: Price & GST Calculations
+        double baseTotalPrice = productVariant.getProduct_variant_price() * itemRequest.getQuantity();
+        double gstRate = gstTax.getGst_rate();
+        double gstAmount = (baseTotalPrice * gstRate) / 100;
+        double cGstAmount = gstAmount / 2;
+        double sGstAmount = gstAmount / 2;
+
         OrderItem orderItem = new OrderItem();
         orderItem.setOrder(order);
         orderItem.setProduct(product);
         orderItem.setProductVariant(productVariant);
-        orderItem.setQuantity(itemRequest.getQuantity());
-        orderItem.setUnit_price(itemRequest.getUnit_price());
-        orderItem.setTotal_price(productVariant.getProduct_variant_price() * itemRequest.getQuantity());
+        orderItem.setUnit_price(productVariant.getProduct_variant_price());
+
+        // Store GST details in OrderItem
+        orderItem.setGstRate(gstRate);
+        orderItem.setGstAmount(gstAmount);
+        orderItem.setC_gstAmount(cGstAmount);
+        orderItem.setS_gstAmount(sGstAmount);
+        orderItem.setGstTax(gstTax);
+        orderItem.setTotal_price(baseTotalPrice);
+
+
+        //if order quantity is greater than inventory quantity then this will throw an exception.
+        ProductInventory inventory = productInventoryRepository.findByProductVariant(productVariant.getProduct_variant_id())
+                .orElseThrow(()-> new ProductVariantNotFoundException(
+                        "Product Variant Not Found" + productVariant.getProduct_variant_id()));
+        Long available = inventory.getQuantity();
+        Long requested = itemRequest.getQuantity();
+        if (available >= requested) {
+            orderItem.setQuantity(requested);
+        } else {
+            throw new OutOfStockException("Requested " + itemRequest.getQuantity() + " but only "
+                    + inventory.getQuantity() + " available.");
+        }
 
         // Here we set Product level discount
         discountRepository.findByproductVariant(productVariant.getProduct_variant_id())
                 .ifPresent(d -> {
-                if(d.getWaiver_mode() == WaiverMode.PERCENTAGE){
-                    double couponDiscount = orderItem.getTotal_price() * d.getDiscount_value()/100;
-                    orderItem.setTotal_price(orderItem.getTotal_price() - couponDiscount);
-                    order.setDiscount(order.getDiscount() + couponDiscount);
-                }
-                else if(d.getWaiver_mode() == WaiverMode.FLAT_AMOUNT){
-                    double couponDiscount = d.getDiscount_value() * itemRequest.getQuantity();
-                    orderItem.setTotal_price(orderItem.getTotal_price() - couponDiscount);
-                    order.setDiscount(order.getDiscount() + couponDiscount);
-                }
-        });
-        order.setTotal_amount(order.getTotal_amount() + orderItem.getTotal_price());
-        orderItemRepository.save(orderItem);
+                    double discountAmount = 0.0;
+                    if (d.getWaiver_mode() == WaiverMode.PERCENTAGE) {
+                        discountAmount = orderItem.getTotal_price() * d.getDiscount_value() / 100;
+                    } else if (d.getWaiver_mode() == WaiverMode.FLAT_AMOUNT) {
+                        discountAmount = d.getDiscount_value() * itemRequest.getQuantity();
+                    }
+                    orderItem.setTotal_price(orderItem.getTotal_price() - discountAmount);
+                    order.setDiscount(order.getDiscount() + discountAmount);
+                });
+
+
         orderItemList.add(orderItem);
     }
+
+    orderItemRepository.saveAll(orderItemList);
     order.setOrder_items(orderItemList);
 
     //  setting 5% discount if total amount is >= 1000 && < 2000
@@ -107,17 +149,22 @@ public String createOrder(OrderRequest orderRequest) {
         order.setDiscount(order.getDiscount() + orderLevelDiscount);
         order.setTotal_amount(order.getTotal_amount() + orderLevelDiscount);
     }
+
     orderRepository.save(order);
 
     // managing inventory
-
-
-
+    for(OrderItem orderItem : orderItemList){
+      ProductVariant productVariant = orderItem.getProductVariant();
+      ProductInventory productInventory = productInventoryRepository.findByProductVariant(productVariant.getProduct_variant_id())
+              .orElseThrow(()-> new ProductVariantNotFoundException(
+                      "Product Variant Not Found" + productVariant.getProduct_variant_id()));
+      productInventory.setQuantity(productInventory.getQuantity() - orderItem.getQuantity());
+      productInventoryRepository.save(productInventory);
+    }
     return "order created successfully";
 }
 
     public List<OrderResponse> getAll() {
-
         List<Order> all = orderRepository.findAll();
         return all.stream().map(OrderResponse::new).toList();
     }

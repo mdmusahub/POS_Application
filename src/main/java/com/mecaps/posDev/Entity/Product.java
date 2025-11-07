@@ -28,8 +28,7 @@ public class Product {
 
     @ManyToOne
     private Category category_id;
-    @ManyToOne
-    private GstTax gst;
+
 
     @OneToMany(mappedBy = "product_id",  cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductVariant> product_variant = new ArrayList<>();
