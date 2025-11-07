@@ -27,4 +27,7 @@ public class Category {
 
     @OneToMany(mappedBy = "category_id", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> products = new ArrayList<>();
+
+    @OneToOne(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private GstTax gstTax;
 }
