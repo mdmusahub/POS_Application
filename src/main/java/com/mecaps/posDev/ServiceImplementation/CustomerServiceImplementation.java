@@ -22,7 +22,7 @@ public class CustomerServiceImplementation implements CustomerService {
     }
 
     public String createCustomer(CustomerRequest customerRequest){
-        customerRepository.findByphoneNumber(customerRequest.getPhoneNumber())
+        customerRepository.findByPhoneNumber(customerRequest.getPhoneNumber())
         .ifPresent(present->{throw new CustomerAlreadyExist("This customer is already exist " + customerRequest.getPhoneNumber());});
         Customer customer = new Customer();
         customer.setEmail(customerRequest.getEmail());

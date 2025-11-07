@@ -5,11 +5,12 @@ import com.mecaps.posDev.Enums.WaiverMode;
 import com.mecaps.posDev.Exception.OutOfStockException;
 import com.mecaps.posDev.Exception.ProductNotFoundException;
 import com.mecaps.posDev.Exception.ProductVariantNotFoundException;
-import com.mecaps.posDev.Exception.ResourceNotFoundException;
 import com.mecaps.posDev.Repository.*;
 import com.mecaps.posDev.Request.OrderItemRequest;
 import com.mecaps.posDev.Request.OrderRequest;
 import com.mecaps.posDev.Response.OrderResponse;
+import com.mecaps.posDev.Service.OrderService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class OrderServiceImpl {
+public class OrderServiceImpl implements OrderService {
 private final OrderRepository orderRepository;
 private final ProductRepository productRepository;
 private final CustomerRepository customerRepository;
@@ -31,6 +32,7 @@ private final ProductInventoryRepository productInventoryRepository;
 
 
 // create order
+@Transactional
 public String createOrder(OrderRequest orderRequest) {
     Customer customer = customerRepository.findByPhoneNumber(orderRequest.getUser_phone_number()).
             orElseGet(()-> {
@@ -48,11 +50,15 @@ public String createOrder(OrderRequest orderRequest) {
     order.setPayment_mode(orderRequest.getPaymentMode());
     order.setCash_amount(orderRequest.getCash_amount());
     order.setOnline_amount(orderRequest.getOnline_amount());
+    order.setDiscount(0d);
 
 
+    double totalTaxAmount = 0.0;
+    double totalAmount = 0.0;
 
     // we are creating and setting orderItem in order
     List<OrderItem> orderItemList = new ArrayList<>();
+
     for(OrderItemRequest itemRequest : orderRequest.getOrder_itemRequest()){
         Product product = productRepository.findById(itemRequest.getProduct_id())
                 .orElseThrow(()-> new ProductNotFoundException("Product not found"));
@@ -74,7 +80,7 @@ public String createOrder(OrderRequest orderRequest) {
                 });
 
 
-        // 🧩 Step 5: Price & GST Calculations
+        //  Step 5: Price & GST Calculations
         double baseTotalPrice = productVariant.getProduct_variant_price() * itemRequest.getQuantity();
         double gstRate = gstTax.getGst_rate();
         double gstAmount = (baseTotalPrice * gstRate) / 100;
@@ -95,6 +101,8 @@ public String createOrder(OrderRequest orderRequest) {
         orderItem.setGstTax(gstTax);
         orderItem.setTotal_price(baseTotalPrice);
 
+        totalTaxAmount += orderItem.getGstAmount();  // here we set tax amount in this variable and update after every Iteration
+        totalAmount += orderItem.getTotal_price(); // here we set total amount in this variable and update after every Iteration
 
         //if order quantity is greater than inventory quantity then this will throw an exception.
         ProductInventory inventory = productInventoryRepository.findByProductVariant(productVariant.getProduct_variant_id())
@@ -121,33 +129,32 @@ public String createOrder(OrderRequest orderRequest) {
                     orderItem.setTotal_price(orderItem.getTotal_price() - discountAmount);
                     order.setDiscount(order.getDiscount() + discountAmount);
                 });
-
-
         orderItemList.add(orderItem);
     }
 
-    orderItemRepository.saveAll(orderItemList);
     order.setOrder_items(orderItemList);
+    order.setTotal_amount(totalAmount);
+    order.setTax(totalTaxAmount);
 
     //  setting 5% discount if total amount is >= 1000 && < 2000
     if(order.getTotal_amount() >= 1000 && order.getTotal_amount() < 2000){
         double orderLevelDiscount = order.getTotal_amount() * 0.05d;
         order.setDiscount(order.getDiscount() + orderLevelDiscount);
-        order.setTotal_amount(order.getTotal_amount() + orderLevelDiscount);
+        order.setTotal_amount(order.getTotal_amount() - orderLevelDiscount);
     }
 
     //  setting 10% discount if total amount is >= 2000 && < 5000
     else if (order.getTotal_amount() >= 2000 && order.getTotal_amount() < 5000) {
         double orderLevelDiscount = order.getTotal_amount() * 0.10d;
         order.setDiscount(order.getDiscount() + orderLevelDiscount);
-        order.setTotal_amount(order.getTotal_amount() + orderLevelDiscount);
+        order.setTotal_amount(order.getTotal_amount() - orderLevelDiscount);
     }
 
     // setting 15% discount if total amount is >= 5000
     else if (order.getTotal_amount() >= 5000) {
         double orderLevelDiscount = order.getTotal_amount() * 0.15d;
         order.setDiscount(order.getDiscount() + orderLevelDiscount);
-        order.setTotal_amount(order.getTotal_amount() + orderLevelDiscount);
+        order.setTotal_amount(order.getTotal_amount() - orderLevelDiscount);
     }
 
     orderRepository.save(order);

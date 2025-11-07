@@ -7,27 +7,23 @@ import com.mecaps.posDev.Repository.DiscountRepository;
 import com.mecaps.posDev.Repository.ProductVariantRepository;
 import com.mecaps.posDev.Request.DiscountRequest;
 import com.mecaps.posDev.Response.DiscountResponse;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.mecaps.posDev.Service.DiscountService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Getter
-@Setter
-@AllArgsConstructor
-public class DiscountServiceImpl {
+@RequiredArgsConstructor
+public class DiscountServiceImpl implements DiscountService {
 
     private final DiscountRepository discountRepository;
     private final ProductVariantRepository productVariantRepository;
 
-    //  CREATE Discount
-    public ResponseEntity<?> createDiscount(DiscountRequest discountRequest) {
+    // ✅ CREATE Discount
+    @Override
+    public String createDiscount(DiscountRequest discountRequest) {
         ProductVariant variant = productVariantRepository.findById(discountRequest.getProduct_variant())
                 .orElseThrow(() -> new ResourceNotFoundException("Product Variant not found"));
 
@@ -40,35 +36,36 @@ public class DiscountServiceImpl {
         discount.setWaiver_mode(discountRequest.getWaiver_mode());
         discount.setProductVariant(variant);
 
-        Discount save = discountRepository.save(discount);
-        return new ResponseEntity<>(new DiscountResponse(save), HttpStatus.CREATED);
+        discountRepository.save(discount);
+        return "Discount created successfully";
     }
 
-    //  GET ALL Discounts
-    public ResponseEntity<?> getAllDiscounts() {
+    // ✅ GET ALL Discounts
+    @Override
+    public List<DiscountResponse> getAllDiscounts() {
         List<Discount> discounts = discountRepository.findAll();
 
         if (discounts.isEmpty()) {
-            return new ResponseEntity<>("No discounts found", HttpStatus.NOT_FOUND);
+            throw new ResourceNotFoundException("No discounts found");
         }
 
-        List<DiscountResponse> responseList = discounts.stream()
+        return discounts.stream()
                 .map(DiscountResponse::new)
                 .collect(Collectors.toList());
-
-        return new ResponseEntity<>(responseList, HttpStatus.OK);
     }
 
-    //  GET Discount BY ID
-    public ResponseEntity<?> getDiscountById(Long id) {
+    // ✅ GET Discount BY ID
+    @Override
+    public DiscountResponse getDiscountById(Long id) {
         Discount discount = discountRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Discount not found with ID: " + id));
 
-        return new ResponseEntity<>(new DiscountResponse(discount), HttpStatus.OK);
+        return new DiscountResponse(discount);
     }
 
-    //  UPDATE Discount
-    public ResponseEntity<?> updateDiscount(Long id, DiscountRequest discountRequest) {
+    // ✅ UPDATE Discount
+    @Override
+    public String updateDiscount(Long id, DiscountRequest discountRequest) {
         Discount discount = discountRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Discount not found with ID: " + id));
 
@@ -85,16 +82,17 @@ public class DiscountServiceImpl {
         discount.setIs_active(discountRequest.getIs_active());
         discount.setWaiver_mode(discountRequest.getWaiver_mode());
 
-        Discount updated = discountRepository.save(discount);
-        return new ResponseEntity<>(new DiscountResponse(updated), HttpStatus.OK);
+        discountRepository.save(discount);
+        return "Discount updated successfully";
     }
 
-    //  DELETE Discount
-    public ResponseEntity<?> deleteDiscount(Long id) {
+    // ✅ DELETE Discount
+    @Override
+    public String deleteDiscount(Long id) {
         Discount discount = discountRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Discount not found with ID: " + id));
 
         discountRepository.delete(discount);
-        return new ResponseEntity<>("Discount deleted successfully", HttpStatus.OK);
+        return "Discount deleted successfully";
     }
 }
