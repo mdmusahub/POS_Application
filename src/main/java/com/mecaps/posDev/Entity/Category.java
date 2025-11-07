@@ -12,7 +12,11 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long category_id;
-    private String category_name;
+
+    @Column(nullable = false, unique = true)
+    private String categoryName;
+
+    @Column(nullable = false)
     private String category_description;
 
     @ManyToOne
@@ -23,4 +27,7 @@ public class Category {
 
     @OneToMany(mappedBy = "category_id", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> products = new ArrayList<>();
+
+    @OneToOne(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private GstTax gstTax;
 }

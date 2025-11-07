@@ -12,15 +12,32 @@ public class ProductVariant {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long product_variant_id;
-    private String product_variant_name;
+
+    @Column(name = "variant_name", nullable = false)
+    private String variantName;
+
+    @Column(nullable = false)
     private Double product_variant_price;
+
+    @Column(nullable = false)
     private Boolean refundable;
+
+    @Column(nullable = false)
     private String product_variant_value;
     
     @ManyToOne
+    @JoinColumn(name = "product_id")
+
     private Product product_id;
 
-    @OneToMany(mappedBy = "product_variant_id", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductInventory> inventories = new ArrayList<>();
+    @OneToOne(mappedBy = "product_variant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private ProductInventory inventory;
+
+    @OneToMany(mappedBy = "product_variant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems = new ArrayList<>();
+
+    @OneToOne(mappedBy = "product_variant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Discount discount;
+
 
 }

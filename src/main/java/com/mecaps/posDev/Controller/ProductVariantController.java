@@ -7,23 +7,22 @@ import com.mecaps.posDev.Service.ProductVariantService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/productVariant")
 public class ProductVariantController {
-final private ProductVariantService productVariantService;
-
+final ProductVariantService productVariantService;
 
     public ProductVariantController(ProductVariantService productVariantService) {
-        this.productVariantService = productVariantService;
+        this.productVariantService = productVariantService;  // correct the parameter of constructor
     }
 
-              // FOR CREATE //
 
-           @PostMapping("/createProductVariant")
+    // FOR CREATE //
+
+            @PostMapping("/createProductVariant")
             public ProductVariantResponse createProductVariant(@RequestBody ProductVariantRequest productVariantRequest){
-            return productVariantService.CreateProductVariant(productVariantRequest);
+            return productVariantService.CreateProductVariant( productVariantRequest);
 }
 
 
@@ -48,5 +47,15 @@ final private ProductVariantService productVariantService;
             @DeleteMapping("/deleteProductVariant/{id}")
             public String deleteProductVariant(@PathVariable Long id){
             return productVariantService.deleteProductVariant(id);
+            }
+
+            @GetMapping("/paginated")
+            public List<ProductVariantResponse> getPaginatedProductVariants
+                    (@RequestParam(defaultValue = "0") int page,
+                     @RequestParam(defaultValue = "5") int size,
+                     @RequestParam(defaultValue = "product_variant_price")String sortBy,
+                     @RequestParam(defaultValue = "asc") String direction)
+            {
+              return productVariantService.getPaginatedProductVariants(page,size,sortBy,direction);
             }
 }
