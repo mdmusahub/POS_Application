@@ -6,12 +6,12 @@ import com.mecaps.posDev.Response.ReturnOrderResponse;
 
 import java.util.List;
 
-public interface ReturnOrderService {
+public interface ReturnService {
     ReturnOrderResponse createReturnOrder(ReturnOrderRequest req);
 
-    ReturnOrder deleteReturnOrder(Long id);
+    String deleteReturnOrder(Long id);
 
-    ReturnOrderResponse updateReturnOrder(Long id, ReturnOrderRequest req);
+    ReturnOrderResponse getById(Long id);
 
     List<ReturnOrderResponse> getReturnOrder();
 }

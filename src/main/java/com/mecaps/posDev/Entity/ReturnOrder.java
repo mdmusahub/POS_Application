@@ -26,7 +26,7 @@ public class ReturnOrder {
     private Long return_quantity;
 
     @ManyToOne
-    private Order order_id;
+    private Order order;
 
     @ManyToOne
     private Customer requested_by_customer_id;

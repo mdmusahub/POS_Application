@@ -30,13 +30,13 @@ public class ProductVariant {
 
     private Product product_id;
 
-    @OneToOne(mappedBy = "product_variant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true)
     private ProductInventory inventory;
 
     @OneToMany(mappedBy = "product_variant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    @OneToOne(mappedBy = "product_variant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true)
     private Discount discount;
 
 

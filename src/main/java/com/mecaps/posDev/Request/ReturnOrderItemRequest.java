@@ -11,14 +11,10 @@ import lombok.Data;
 @Data
 public class ReturnOrderItemRequest
 {
+    private Long order_item_id;
     private Long return_quantity;
     private ReturnReason return_reason;
     private ReturnStatus return_status;
-    private Product product_id;
-    private ProductVariant product_variant_id;
-    private OrderItem order_item_id;
-    private Order order_id;
-
 
 
 }
