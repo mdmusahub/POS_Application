@@ -21,7 +21,7 @@ public class ProductInventoryController {
 
     @PostMapping("/createInventory")
     public ProductInventoryResponse createProductInventory(@RequestBody ProductInventoryRequest request){
-       return productInventoryService.createInventory(request);
+        return productInventoryService.createInventory(request);
     }
 
     @PutMapping("/updateInventory/{id}") // add id variable

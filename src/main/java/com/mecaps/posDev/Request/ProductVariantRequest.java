@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class ProductVariantRequest {
 
-    private String variantName;
+    private String product_variant_name;
     private Double product_variant_price;
     private Boolean refundable;
     private String product_variant_value;
