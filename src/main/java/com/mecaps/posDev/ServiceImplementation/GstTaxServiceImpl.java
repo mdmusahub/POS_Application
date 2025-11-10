@@ -7,26 +7,22 @@ import com.mecaps.posDev.Repository.CategoryRepository;
 import com.mecaps.posDev.Repository.GstTaxRepository;
 import com.mecaps.posDev.Request.GstTaxRequest;
 import com.mecaps.posDev.Response.GstTaxResponse;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import com.mecaps.posDev.Service.GstTaxService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Service
-@Getter
-@Setter
-@AllArgsConstructor
-public class GstTaxServiceImpl {
+@RequiredArgsConstructor
+public class GstTaxServiceImpl implements GstTaxService {
+
     private final GstTaxRepository gstTaxRepository;
     private final CategoryRepository categoryRepository;
 
-    public ResponseEntity<?> createGstTax(GstTaxRequest gstTaxRequest) {
+    @Override
+    public String createGstTax(GstTaxRequest gstTaxRequest) {
         Category category = categoryRepository.findById(gstTaxRequest.getCategory_id())
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
 
@@ -37,38 +33,35 @@ public class GstTaxServiceImpl {
         gstTax.setS_gst(gstTaxRequest.getS_gst());
         gstTax.setCategory(category);
 
-        GstTax save = gstTaxRepository.save(gstTax);
-        return new ResponseEntity<>(new GstTaxResponse(save), HttpStatus.CREATED);
+        gstTaxRepository.save(gstTax);
+        return "GST tax created successfully";
     }
 
-    public ResponseEntity<?> getAllGstTax() {
+    @Override
+    public List<GstTaxResponse> getAllGstTax() {
         List<GstTax> gstTaxList = gstTaxRepository.findAll();
 
         if (gstTaxList.isEmpty()) {
-            return new ResponseEntity<>("No GST tax records found", HttpStatus.NOT_FOUND);
+            throw new RuntimeException("No GST tax records found");
         }
 
-        List<GstTaxResponse> responseList = gstTaxList.stream()
+        return gstTaxList.stream()
                 .map(GstTaxResponse::new)
                 .collect(Collectors.toList());
-
-        return new ResponseEntity<>(responseList, HttpStatus.OK);
     }
 
-    //  GET GST TAX BY ID
-    public ResponseEntity<?> getGstTaxById(Long id) {
+    @Override
+    public GstTaxResponse getGstTaxById(Long id) {
+        GstTax gstTax = gstTaxRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("GST tax not found with ID: " + id));
+        return new GstTaxResponse(gstTax);
+    }
+
+    @Override
+    public String updateGstTax(Long id, GstTaxRequest gstTaxRequest) {
         GstTax gstTax = gstTaxRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("GST tax not found with ID: " + id));
 
-        return new ResponseEntity<>(new GstTaxResponse(gstTax), HttpStatus.OK);
-    }
-
-    //  UPDATE GST TAX
-    public ResponseEntity<?> updateGstTax(Long id, GstTaxRequest gstTaxRequest) {
-        GstTax gstTax = gstTaxRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("GST tax not found with ID: " + id));
-
-        // Update category (if provided)
         if (gstTaxRequest.getCategory_id() != null) {
             Category category = categoryRepository.findById(gstTaxRequest.getCategory_id())
                     .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
@@ -80,16 +73,16 @@ public class GstTaxServiceImpl {
         gstTax.setC_gst(gstTaxRequest.getC_gst());
         gstTax.setS_gst(gstTaxRequest.getS_gst());
 
-        GstTax updated = gstTaxRepository.save(gstTax);
-        return new ResponseEntity<>(new GstTaxResponse(updated), HttpStatus.OK);
+        gstTaxRepository.save(gstTax);
+        return "GST tax updated successfully";
     }
 
-    public ResponseEntity<?> deleteGstTax(Long id) {
+    @Override
+    public String deleteGstTax(Long id) {
         GstTax gstTax = gstTaxRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("GST tax not found with ID: " + id));
 
         gstTaxRepository.delete(gstTax);
-        return new ResponseEntity<>("GST tax deleted successfully", HttpStatus.OK);
+        return "GST tax deleted successfully";
     }
 }
-
