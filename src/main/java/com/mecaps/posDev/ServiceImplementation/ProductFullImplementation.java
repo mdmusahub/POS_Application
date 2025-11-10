@@ -69,7 +69,7 @@ if(productFullRequest.getProductVariantRequests()!= null && !productFullRequest.
 
             productInventory.setLocation(productInventoryRequest.getLocation());
             productInventory.setQuantity(productInventoryRequest.getQuantity());
-            productInventory.setProduct_variant(save2);
+            productInventory.setProductVariant(save2);
             productInventory.setProduct_id(save1);
 ProductInventory save3 = productInventoryRepository.save(productInventory);
 
