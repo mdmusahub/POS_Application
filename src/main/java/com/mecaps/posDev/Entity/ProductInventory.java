@@ -27,10 +27,8 @@ private String location;
 private Long quantity;
 
 @ManyToOne
-private Product product_id;
+private Product productId;
 
 @OneToOne
-@JoinColumn(name = "variant_id")
-
-private ProductVariant product_variant;
+private ProductVariant productVariant;
 }

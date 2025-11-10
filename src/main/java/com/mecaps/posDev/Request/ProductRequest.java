@@ -10,4 +10,5 @@ public class ProductRequest {
         private String product_description;
         private String sku;
         private Long category_id;
+        private long productId ;
 }

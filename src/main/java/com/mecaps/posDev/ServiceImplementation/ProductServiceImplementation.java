@@ -2,14 +2,21 @@ package com.mecaps.posDev.ServiceImplementation;
 
 import com.mecaps.posDev.Entity.Category;
 import com.mecaps.posDev.Entity.Product;
+import com.mecaps.posDev.Entity.ProductInventory;
+import com.mecaps.posDev.Entity.ProductVariant;
 import com.mecaps.posDev.Exception.CategoryNotFoundException;
 import com.mecaps.posDev.Exception.ProductAlreadyExist;
 import com.mecaps.posDev.Exception.ProductNotFoundExpection;
 import com.mecaps.posDev.Repository.CategoryRepository;
+import com.mecaps.posDev.Repository.ProductInventoryRepository;
 import com.mecaps.posDev.Repository.ProductRepository;
 import com.mecaps.posDev.Repository.ProductVariantRepository;
 import com.mecaps.posDev.Request.ProductRequest;
+import com.mecaps.posDev.Request.ProductVariantRequest;
+import com.mecaps.posDev.Response.FullResponse;
 import com.mecaps.posDev.Response.ProductResponse;
+import com.mecaps.posDev.Response.ProductVariantResponse;
+import com.mecaps.posDev.Response.ViResponse;
 import com.mecaps.posDev.Service.ProductService;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -20,11 +27,15 @@ public class ProductServiceImplementation implements ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductVariantRepository productVariantRepository ;
+    private final ProductInventoryRepository productInventoryRepository;
 
 
-    public ProductServiceImplementation(ProductRepository productRepository, CategoryRepository categoryRepository) {
+    public ProductServiceImplementation(ProductRepository productRepository, CategoryRepository categoryRepository, ProductVariantRepository productVariantRepository, ProductInventoryRepository productInventoryRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.productVariantRepository = productVariantRepository;
+        this.productInventoryRepository = productInventoryRepository;
     }
 
 
@@ -35,7 +46,7 @@ public class ProductServiceImplementation implements ProductService {
         Product product = new Product();
         Category category = categoryRepository.findById(req.getCategory_id())
         .orElseThrow(() -> new CategoryNotFoundException("This Category Id is not found " + req.getCategory_id()));
-        product.setCategory_id(category);
+        product.setCategoryId(category);
         product.setProductName(req.getProduct_name());
         product.setSku(req.getSku());
         product.setProduct_description(req.getProduct_description());
@@ -59,7 +70,7 @@ public class ProductServiceImplementation implements ProductService {
                 .orElseThrow(() -> new CategoryNotFoundException("This category Id is not found " + req.getCategory_id()));
         updatePro.setProductName(req.getProduct_name());
         updatePro.setProduct_description(req.getProduct_description());
-        updatePro.setCategory_id(category);
+        updatePro.setCategoryId(category);
         Product save = productRepository.save(updatePro) ;
         return new ProductResponse(save);
     }
@@ -71,5 +82,20 @@ public class ProductServiceImplementation implements ProductService {
         return getProduct.stream().map(ProductResponse::new).toList();
     }
 
+    public FullResponse getAllDetailThoughProductId(Long id) {
+        Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("This product is not found"));
+        List<ProductVariant> productVariant = productVariantRepository.findByProductId_ProductId(product.getProductId());
+        List<ViResponse> viResponseList = productVariant.stream().map(variant -> {
+            ProductInventory inventory = productInventoryRepository
+                    .findByproductVariant(variant)
+                    .orElse(null);
+            return new ViResponse(variant, inventory);
+        }).toList();
 
+
+        FullResponse response = new FullResponse();
+        response.setProductResponse(new ProductResponse(product));
+        response.setViResponseList(viResponseList);
+        return response;
+       }
 }

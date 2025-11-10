@@ -8,6 +8,7 @@ import com.mecaps.posDev.Exception.ProductVariantNotFoundExpection;
 import com.mecaps.posDev.Repository.ProductRepository;
 import com.mecaps.posDev.Repository.ProductVariantRepository;
 import com.mecaps.posDev.Request.ProductVariantRequest;
+import com.mecaps.posDev.Response.ProductResponse;
 import com.mecaps.posDev.Response.ProductVariantResponse;
 import com.mecaps.posDev.Service.ProductVariantService;
 import org.springframework.data.domain.Page;
@@ -79,6 +80,9 @@ public List<ProductVariantResponse> getPaginatedProductVariants(int page, int si
         Page<ProductVariant> productVariantPage = productVariantRepository.findAll(pageable);
         return productVariantPage.getContent().stream().map(ProductVariantResponse :: new).toList();
 }
+
+
+
 
 
 }

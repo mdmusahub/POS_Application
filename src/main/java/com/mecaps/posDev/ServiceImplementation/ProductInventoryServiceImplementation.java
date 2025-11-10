@@ -39,8 +39,8 @@ public class ProductInventoryServiceImplementation implements ProductInventorySe
                 .orElseThrow(()-> new ProductVariantNotFoundExpection("This variant Id is not found " + request.getProduct_variant_id()));
 
         ProductInventory inventory = new ProductInventory();
-        inventory.setProduct_variant(variant);  // add variant id in inventory
-        inventory.setProduct_id(product);
+        inventory.setProductVariant(variant);  // add variant id in inventory
+        inventory.setProductId(product);
         inventory.setQuantity(request.getQuantity());
         inventory.setLocation(request.getLocation());
 
@@ -66,8 +66,8 @@ public class ProductInventoryServiceImplementation implements ProductInventorySe
 
         productInventory.setLocation(request.getLocation());
         productInventory.setQuantity(request.getQuantity());
-        productInventory.setProduct_id(product);
-        productInventory.setProduct_variant(variant);
+        productInventory.setProductId(product);
+        productInventory.setProductVariant(variant);
         productInventoryRepository.save(productInventory);  // add save of productInventory
 
         return "Inventory updated successfully";
