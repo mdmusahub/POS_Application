@@ -3,6 +3,7 @@ package com.mecaps.posDev.Service;
 import com.mecaps.posDev.Entity.Product;
 import com.mecaps.posDev.Request.ProductRequest;
 import com.mecaps.posDev.Response.ProductResponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -15,4 +16,7 @@ public interface ProductService {
     List<ProductResponse> getProduct();
 
     ProductResponse createProduct(ProductRequest req);
+
+    public Page<ProductResponse> getPaginatedProduct(int page, int size, String sortType);
+
 }

@@ -2,6 +2,7 @@ package com.mecaps.posDev.ServiceImplementation;
 
 import com.mecaps.posDev.Entity.Category;
 import com.mecaps.posDev.Entity.Product;
+import com.mecaps.posDev.Entity.ProductVariant;
 import com.mecaps.posDev.Exception.CategoryNotFoundException;
 import com.mecaps.posDev.Exception.ProductAlreadyExist;
 import com.mecaps.posDev.Exception.ProductNotFoundExpection;
@@ -10,7 +11,12 @@ import com.mecaps.posDev.Repository.ProductRepository;
 import com.mecaps.posDev.Repository.ProductVariantRepository;
 import com.mecaps.posDev.Request.ProductRequest;
 import com.mecaps.posDev.Response.ProductResponse;
+import com.mecaps.posDev.Response.ProductVariantResponse;
 import com.mecaps.posDev.Service.ProductService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -71,4 +77,24 @@ public class ProductServiceImplementation implements ProductService {
     }
 
 
-}
+
+
+    public Page<ProductResponse> getPaginatedProduct(int page, int size, String sortType) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Product> productPage;
+        if (sortType != null && sortType.toLowerCase().startsWith("max")) {
+            productPage = productRepository.findAllByMaxVariantPrice(pageable);
+        }
+      else if (sortType != null && sortType.toLowerCase().startsWith("min")) {
+            productPage = productRepository.findAllByMinVariantPrice(pageable);
+
+        }else {
+            productPage = productRepository.findAllByMinVariantPrice(pageable);
+            System.out.println(" Invalid sortType, defaulting to MIN variant price");        }
+
+        return productPage.map(ProductResponse::new);
+    }
+
+    }
+
