@@ -7,7 +7,6 @@ import com.mecaps.posDev.Exception.ResourceNotFoundException;
 import com.mecaps.posDev.Repository.ReturnOrderItemRepository;
 import com.mecaps.posDev.Repository.ReturnOrderRepository;
 import com.mecaps.posDev.Request.ReturnOrderRequest;
-import com.mecaps.posDev.Response.ReturnOrderItemResponse;
 import com.mecaps.posDev.Response.ReturnOrderResponse;
 import com.mecaps.posDev.Service.ReturnService;
 import org.springframework.stereotype.Service;
@@ -33,7 +32,7 @@ public class ReturnServiceImplementation implements ReturnService {
 
     @Override
     public String deleteReturnOrder(Long id) {
-        ReturnOrder returnOrder = returnOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("This Product Id is not found " + id));
+        ReturnOrder returnOrder = returnOrderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("This Product Id is not found " + id));
         Order order = returnOrder.getOrder();
         List<ReturnOrderItem> returnOrderItem = returnOrderItemRepository.findAllReturnOrderItemsByOrder(order);
         returnOrderItemRepository.deleteAll(returnOrderItem);
