@@ -5,10 +5,9 @@ import com.mecaps.posDev.Entity.Product;
 import com.mecaps.posDev.Entity.ProductVariant;
 import com.mecaps.posDev.Exception.CategoryNotFoundException;
 import com.mecaps.posDev.Exception.ProductAlreadyExist;
-import com.mecaps.posDev.Exception.ProductNotFoundExpection;
+import com.mecaps.posDev.Exception.ProductNotFoundException;
 import com.mecaps.posDev.Repository.CategoryRepository;
 import com.mecaps.posDev.Repository.ProductRepository;
-import com.mecaps.posDev.Repository.ProductVariantRepository;
 import com.mecaps.posDev.Request.ProductRequest;
 import com.mecaps.posDev.Response.ProductResponse;
 import com.mecaps.posDev.Response.ProductVariantResponse;
@@ -43,6 +42,7 @@ public class ProductServiceImplementation implements ProductService {
         .orElseThrow(() -> new CategoryNotFoundException("This Category Id is not found " + req.getCategory_id()));
         product.setCategory_id(category);
         product.setProductName(req.getProduct_name());
+        product.setSku(req.getSku());
         product.setProduct_description(req.getProduct_description());
         Product save = productRepository.save(product);
         return new ProductResponse(save);
@@ -51,7 +51,7 @@ public class ProductServiceImplementation implements ProductService {
 
 
     public Product deleteProduct(Long id) {
-        Product deleteProduct = productRepository.findById(id).orElseThrow(()->new ProductNotFoundExpection("This product Id is not found " + id));
+        Product deleteProduct = productRepository.findById(id).orElseThrow(()->new ProductNotFoundException("This product Id is not found " + id));
         productRepository.delete(deleteProduct);
         return deleteProduct;
     }
@@ -59,7 +59,7 @@ public class ProductServiceImplementation implements ProductService {
 
 
     public ProductResponse updateProduct(Long id,ProductRequest req) {
-        Product updatePro = productRepository.findById(id).orElseThrow(()->new ProductNotFoundExpection("This product Id is not found " + id));
+        Product updatePro = productRepository.findById(id).orElseThrow(()->new ProductNotFoundException("This product Id is not found " + id));
         Category category = categoryRepository.findById(req.getCategory_id())
                 .orElseThrow(() -> new CategoryNotFoundException("This category Id is not found " + req.getCategory_id()));
         updatePro.setProductName(req.getProduct_name());

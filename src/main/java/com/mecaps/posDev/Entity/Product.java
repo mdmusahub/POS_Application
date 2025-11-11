@@ -29,11 +29,15 @@ public class Product {
     @ManyToOne
     private Category category_id;
 
+
     @OneToMany(mappedBy = "product_id",  cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductVariant> product_variant = new ArrayList<>();
 
     @OneToMany(mappedBy = "product_id", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductInventory> inventories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     @DateTimeFormat
     @CreationTimestamp
