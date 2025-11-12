@@ -181,7 +181,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.delete(order);
         return "order deleted successfully";
     }
-
+    @Transactional
     public OrderResponse updateOrder(Long id, OrderRequest orderRequest) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found with ID : " + id));
 
