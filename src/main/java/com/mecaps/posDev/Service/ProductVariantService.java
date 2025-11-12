@@ -12,4 +12,5 @@ public interface ProductVariantService {
     String deleteProductVariant(Long id);
     ProductVariantResponse updateProductVariant(Long id, ProductVariantRequest productVariantRequest);
     List<ProductVariantResponse> getPaginatedProductVariants(int page, int size, String sortBy, String direction);
+    ProductVariantResponse findProductVariantById(Long variantId);
 }
