@@ -6,7 +6,7 @@ import com.mecaps.posDev.Response.OrderResponse;
 import java.util.List;
 
 public interface OrderService {
-    String createOrder(OrderRequest orderRequest);
+    OrderResponse createOrder(OrderRequest orderRequest);
     List<OrderResponse> getAll();
     OrderResponse getById(Long orderId);
     String deleteOrder(Long order_id);

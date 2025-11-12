@@ -29,7 +29,7 @@ public class OrderItemServiceImpl implements OrderItemService {
 
 
     public List<OrderItemResponse> getOrderItemsByOrder(Long orderId) {
-        List<OrderItem> orderItems = orderItemRepository.findByOrder_Order_id(orderId);
+        List<OrderItem> orderItems = orderItemRepository.findByOrder_orderId(orderId);
 
         if (orderItems.isEmpty()) {
             throw new ResourceNotFoundException("No order items found for Order ID: " + orderId);

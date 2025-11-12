@@ -28,11 +28,12 @@ public class OrderServiceImpl implements OrderService {
     private final DiscountRepository discountRepository;
     private final GstTaxRepository gstTaxRepository;
     private final ProductInventoryRepository productInventoryRepository;
+    private final EmailService emailService;
 
 
     // create order
     @Transactional
-    public String createOrder(OrderRequest orderRequest) {
+    public OrderResponse createOrder(OrderRequest orderRequest) {
         Customer customer = customerRepository.findByPhoneNumber(orderRequest.getUser_phone_number()).
                 orElseGet(() -> {
                     Customer newCustomer = new Customer();
@@ -83,7 +84,7 @@ public class OrderServiceImpl implements OrderService {
             double baseTotalPrice = productVariant.getProduct_variant_price() * itemRequest.getQuantity();
             double discountedPrice = baseTotalPrice;
             // Here we set Product level discount
-            Discount discount = discountRepository.findByproductVariant(productVariant.getProduct_variant_id())
+            Discount discount = discountRepository.findByproductVariant_productVariantId(productVariant.getProductVariantId())
                     .orElse(null);
             if (discount != null) {
                 double discountAmount = 0.0;
@@ -108,12 +109,14 @@ public class OrderServiceImpl implements OrderService {
             orderItem.setProductVariant(productVariant);
 
             //here we check inventory stock before set in orderItem entity. If order quantity is greater than inventory quantity then this will throw an exception.
-            ProductInventory inventory = productInventoryRepository.findByProductVariant(productVariant.getProduct_variant_id())
+            ProductInventory inventory = productInventoryRepository.findByProductVariant_productVariantId(itemRequest.getProduct_variant_id())
                     .orElseThrow(() -> new ProductVariantNotFoundException(
-                            "Product Variant Not Found" + productVariant.getProduct_variant_id()));
+                            "Product Variant Not Found" + productVariant.getProduct_id()));
             if (inventory.getQuantity() < itemRequest.getQuantity()) {
                 throw new OutOfStockException("Requested " + itemRequest.getQuantity() + " but only " + inventory.getQuantity() + " available.");
             }
+            orderItem.setQuantity(itemRequest.getQuantity());
+
             // Set unit price and calculated amounts
             orderItem.setUnit_price(productVariant.getProduct_variant_price());
 
@@ -138,11 +141,11 @@ public class OrderServiceImpl implements OrderService {
         // here we are checking order level discount is present or not before set total price in order
         double orderLevelDiscount = 0.0;
         if (subtotalBeforeTax >= 1000 && subtotalBeforeTax < 2000) {
-            orderLevelDiscount = subtotalBeforeTax * 0.05d; //  setting 5% discount if total amount is >= 1000 && < 2000
+            orderLevelDiscount = subtotalBeforeTax * 0.02d; //  setting 2% discount if total amount is >= 1000 && < 2000
         } else if (subtotalBeforeTax >= 2000 && subtotalBeforeTax < 5000) {
-            orderLevelDiscount = subtotalBeforeTax * 0.10d; //  setting 10% discount if total amount is >= 2000 && < 5000
+            orderLevelDiscount = subtotalBeforeTax * 0.04d; //  setting 4% discount if total amount is >= 2000 && < 5000
         } else if (subtotalBeforeTax >= 5000) {
-            orderLevelDiscount = subtotalBeforeTax * 0.15d;  // setting 15% discount if total amount is >= 5000
+            orderLevelDiscount = subtotalBeforeTax * 0.06d;  // setting 6% discount if total amount is >= 5000
         }
 
         if (orderLevelDiscount > 0) {
@@ -152,19 +155,47 @@ public class OrderServiceImpl implements OrderService {
 
         order.setTax(totalTaxAmount);
         order.setTotal_amount(subtotalBeforeTax + totalTaxAmount); // here we set total order price after checking order level discount is present or not
-        orderRepository.save(order);
+        Order save =  orderRepository.save(order);
 
         // managing inventory
         for (OrderItem orderItem : orderItemList) {
             ProductVariant productVariant = orderItem.getProductVariant();
-            ProductInventory productInventory = productInventoryRepository.findByProductVariant(productVariant.getProduct_variant_id())
+            ProductInventory productInventory = productInventoryRepository.findByProductVariant_productVariantId(productVariant.getProductVariantId())
                     .orElseThrow(() -> new ProductVariantNotFoundException(
-                            "Product Variant Not Found" + productVariant.getProduct_variant_id()));
+                            "Product Variant Not Found" + productVariant.getProductVariantId()));
             productInventory.setQuantity(productInventory.getQuantity() - orderItem.getQuantity());
             productInventoryRepository.save(productInventory);
         }
-        return "order created successfully";
+
+//      Send confirmation email
+        String to = order.getUser_email();
+        String subject = "Order Confirmed - #" + order.getOrderId();
+        StringBuilder body = new StringBuilder();
+        body.append("Hello.\n\n");
+        body.append("Your order has been confirmed successfully!\n\n");
+        body.append("Order Details:\n");
+        body.append("Order ID: ").append(order.getOrderId()).append("\n");
+        body.append("Total Amount: ₹").append(order.getTotal_amount()).append("\n");
+        body.append("Payment Mode: ").append(order.getPayment_mode()).append("\n");
+        body.append("Status: ").append(order.getOrder_status()).append("\n\n");
+        body.append("Thank you for shopping with us!\n");
+        body.append("POS System Team");
+
+        if (to != null && !to.isEmpty()) {
+            try {
+                emailService.sendEmail(to, subject, body.toString());
+                System.out.println("Order confirmation email sent to " + to);
+            } catch (Exception e) {
+                System.err.println("Failed to send confirmation email: " + e.getMessage());
+            }
+        } else {
+            System.out.println("No email found for this customer. Skipping email notification.");
+        }
+
+        return new OrderResponse(save);
     }
+
+
 
     public List<OrderResponse> getAll() {
         List<Order> all = orderRepository.findAll();
