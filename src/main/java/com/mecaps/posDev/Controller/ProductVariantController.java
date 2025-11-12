@@ -50,6 +50,11 @@ final ProductVariantService productVariantService;
             return productVariantService.deleteProductVariant(id);
             }
 
+            @GetMapping("/get/{id}")
+            public ProductVariantResponse getProductVariantById(@PathVariable Long id){
+            return productVariantService.findProductVariantById(id);
+            }
+
             @GetMapping("/paginated")
             public List<ProductVariantResponse> getPaginatedProductVariants
                     (@RequestParam(defaultValue = "0") int page,
