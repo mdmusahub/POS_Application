@@ -43,6 +43,7 @@ public class ProductVariantServiceImplementation implements ProductVariantServic
         productVariant.setProduct_variant_price(productVariantRequest.getProduct_variant_price()); // correct the name of parameter
         productVariant.setRefundable(productVariantRequest.getRefundable());
         productVariant.setProduct_variant_value(productVariantRequest.getProduct_variant_value());
+        productVariant.setProduct_id(product);
         ProductVariant pv = productVariantRepository.save(productVariant);
         return new ProductVariantResponse(pv);
     }
@@ -54,6 +55,12 @@ public class ProductVariantServiceImplementation implements ProductVariantServic
         return productVariantList.stream().map(ProductVariantResponse::new).toList();
     }
 
+    public ProductVariantResponse findProductVariantById(Long variantId){
+        ProductVariant productVariant = productVariantRepository.findById(variantId).orElseThrow(()->
+                new ProductVariantNotFoundException("This Product Variant Id is  Not Found " + variantId)) ;
+        return new ProductVariantResponse(productVariant);
+    }
+
 
 
     public String deleteProductVariant(Long id){
@@ -63,10 +70,15 @@ public class ProductVariantServiceImplementation implements ProductVariantServic
 }
 
     public ProductVariantResponse updateProductVariant(Long id, ProductVariantRequest productVariantRequest){
-        ProductVariant productVariant1 = productVariantRepository.findById(id).orElseThrow(()-> new ProductVariantNotFoundException("This product variant Id is not found " + id));
+        ProductVariant productVariant1 = productVariantRepository.findById(id).orElseThrow(()->
+                new ProductVariantNotFoundException("This product variant Id is not found " + id));
+        Product product = productRepository.findById(productVariantRequest.getProduct_id()).orElseThrow(()->
+                new ProductNotFoundException("This Product Id is not found " + productVariantRequest.getProduct_id()));
         productVariant1.setVariantName(productVariantRequest.getProduct_variant_name());
         productVariant1.setProduct_variant_value(productVariantRequest.getProduct_variant_value());
         productVariant1.setProduct_variant_price(productVariantRequest.getProduct_variant_price());
+        productVariant1.setRefundable(productVariantRequest.getRefundable());
+        productVariant1.setProduct_id(product);
         ProductVariant save = productVariantRepository.save(productVariant1);
         return new ProductVariantResponse(save);
 }
