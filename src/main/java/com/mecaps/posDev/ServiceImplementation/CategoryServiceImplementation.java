@@ -1,6 +1,7 @@
 package com.mecaps.posDev.ServiceImplementation;
 
 import com.mecaps.posDev.Entity.Category;
+import com.mecaps.posDev.Entity.Product;
 import com.mecaps.posDev.Exception.CategoryAlreadyExist;
 import com.mecaps.posDev.Exception.CategoryNotFoundException;
 import com.mecaps.posDev.Repository.CategoryRepository;
@@ -36,6 +37,7 @@ public class CategoryServiceImplementation implements CategoryService {
             category.setCategory_description(req.getCategory_description()); // correct getter method
 
             Category save = categoryRepository.save(category);
+
             return new CategoryResponse(save);
     }
 

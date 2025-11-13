@@ -21,7 +21,7 @@ public class DiscountServiceImpl implements DiscountService {
     private final DiscountRepository discountRepository;
     private final ProductVariantRepository productVariantRepository;
 
-    // ✅ CREATE Discount
+    //  CREATE Discount
     @Override
     public String createDiscount(DiscountRequest discountRequest) {
         ProductVariant variant = productVariantRepository.findById(discountRequest.getProduct_variant())
@@ -40,7 +40,7 @@ public class DiscountServiceImpl implements DiscountService {
         return "Discount created successfully";
     }
 
-    // ✅ GET ALL Discounts
+    //  GET ALL Discounts
     @Override
     public List<DiscountResponse> getAllDiscounts() {
         List<Discount> discounts = discountRepository.findAll();
@@ -54,7 +54,7 @@ public class DiscountServiceImpl implements DiscountService {
                 .collect(Collectors.toList());
     }
 
-    // ✅ GET Discount BY ID
+    //  GET Discount BY ID
     @Override
     public DiscountResponse getDiscountById(Long id) {
         Discount discount = discountRepository.findById(id)
@@ -63,7 +63,7 @@ public class DiscountServiceImpl implements DiscountService {
         return new DiscountResponse(discount);
     }
 
-    // ✅ UPDATE Discount
+    //  UPDATE Discount
     @Override
     public String updateDiscount(Long id, DiscountRequest discountRequest) {
         Discount discount = discountRepository.findById(id)
@@ -86,7 +86,7 @@ public class DiscountServiceImpl implements DiscountService {
         return "Discount updated successfully";
     }
 
-    // ✅ DELETE Discount
+    //  DELETE Discount
     @Override
     public String deleteDiscount(Long id) {
         Discount discount = discountRepository.findById(id)

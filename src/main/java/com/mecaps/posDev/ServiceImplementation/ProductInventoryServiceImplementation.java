@@ -40,7 +40,7 @@ public class ProductInventoryServiceImplementation implements ProductInventorySe
 
         ProductInventory inventory = new ProductInventory();
         inventory.setProductVariant(variant);  // add variant id in inventory
-        inventory.setProduct_id(product);
+        inventory.setProductId(product);
         inventory.setQuantity(request.getQuantity());
         inventory.setLocation(request.getLocation());
 
@@ -66,7 +66,7 @@ public class ProductInventoryServiceImplementation implements ProductInventorySe
 
          productInventory.setLocation(request.getLocation());
          productInventory.setQuantity(request.getQuantity());
-         productInventory.setProduct_id(product);
+         productInventory.setProductId(product);
          productInventory.setProductVariant(variant);
          productInventoryRepository.save(productInventory);  // add save of productInventory
 

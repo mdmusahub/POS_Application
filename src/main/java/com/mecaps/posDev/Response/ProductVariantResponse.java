@@ -1,5 +1,6 @@
 package com.mecaps.posDev.Response;
 
+import com.mecaps.posDev.Entity.Product;
 import com.mecaps.posDev.Entity.ProductVariant;
 import lombok.Data;
 import lombok.Getter;
@@ -18,5 +19,6 @@ public class ProductVariantResponse {
         this.product_variant_price = productVariant.getProduct_variant_price();
         this.product_variant_value = productVariant.getProduct_variant_value();
         this.refundable = productVariant.getRefundable();
+
     }
 }

@@ -14,7 +14,8 @@ import java.util.List;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long product_id;
+    private Long productId;
+
 
     @Column(nullable = false)
     private String productName;
@@ -27,17 +28,13 @@ public class Product {
     private String sku;
 
     @ManyToOne
-    private Category category_id;
+    private Category categoryId;
 
-
-    @OneToMany(mappedBy = "product_id",  cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "productId",  cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductVariant> product_variant = new ArrayList<>();
 
-    @OneToMany(mappedBy = "product_id", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "productId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductInventory> inventories = new ArrayList<>();
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> orderItems = new ArrayList<>();
 
     @DateTimeFormat
     @CreationTimestamp

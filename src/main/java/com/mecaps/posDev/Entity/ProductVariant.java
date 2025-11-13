@@ -2,15 +2,18 @@ package com.mecaps.posDev.Entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 public class ProductVariant {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productVariantId;
 
     @Column(name = "variant_name", nullable = false)
@@ -28,7 +31,7 @@ public class ProductVariant {
     @ManyToOne
     @JoinColumn(name = "product_id")
 
-    private Product product_id;
+    private Product productId;
 
     @OneToOne(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true)
     private ProductInventory inventory;
