@@ -8,6 +8,7 @@ import com.mecaps.posDev.Exception.ProductVariantNotFoundException;
 import com.mecaps.posDev.Repository.ProductRepository;
 import com.mecaps.posDev.Repository.ProductVariantRepository;
 import com.mecaps.posDev.Request.ProductVariantRequest;
+import com.mecaps.posDev.Response.ProductResponse;
 import com.mecaps.posDev.Response.ProductVariantResponse;
 import com.mecaps.posDev.Service.ProductVariantService;
 import org.springframework.data.domain.Page;
@@ -43,7 +44,7 @@ public class ProductVariantServiceImplementation implements ProductVariantServic
         productVariant.setProduct_variant_price(productVariantRequest.getProduct_variant_price()); // correct the name of parameter
         productVariant.setRefundable(productVariantRequest.getRefundable());
         productVariant.setProduct_variant_value(productVariantRequest.getProduct_variant_value());
-        productVariant.setProduct_id(product);
+        productVariant.setProductId(product);
         ProductVariant pv = productVariantRepository.save(productVariant);
         return new ProductVariantResponse(pv);
     }
@@ -74,7 +75,7 @@ public class ProductVariantServiceImplementation implements ProductVariantServic
         productVariant1.setProduct_variant_value(productVariantRequest.getProduct_variant_value());
         productVariant1.setProduct_variant_price(productVariantRequest.getProduct_variant_price());
         productVariant1.setRefundable(productVariantRequest.getRefundable());
-        productVariant1.setProduct_id(product);
+        productVariant1.setProductId(product);
         ProductVariant save = productVariantRepository.save(productVariant1);
         return new ProductVariantResponse(save);
 }
@@ -85,6 +86,9 @@ public List<ProductVariantResponse> getPaginatedProductVariants(int page, int si
         Page<ProductVariant> productVariantPage = productVariantRepository.findAll(pageable);
         return productVariantPage.getContent().stream().map(ProductVariantResponse :: new).toList();
 }
+
+
+
 
 
 }

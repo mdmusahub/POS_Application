@@ -26,7 +26,7 @@ private String location;
 private Long quantity;
 
 @ManyToOne
-private Product product_id;
+private Product productId;
 
 @OneToOne
 private ProductVariant productVariant;

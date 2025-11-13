@@ -28,7 +28,7 @@ public class ProductVariant {
     @ManyToOne
     @JoinColumn(name = "product_id")
 
-    private Product product_id;
+    private Product productId;
 
     @OneToOne(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true)
     private ProductInventory inventory;

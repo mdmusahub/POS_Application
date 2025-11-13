@@ -25,7 +25,7 @@ public class Category {
     @OneToMany(mappedBy = "parent_category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Category> subCategories = new ArrayList<>();
 
-    @OneToMany(mappedBy = "category_id", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "categoryId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> products = new ArrayList<>();
 
     @OneToOne(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)

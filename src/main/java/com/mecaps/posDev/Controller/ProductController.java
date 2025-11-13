@@ -2,6 +2,7 @@ package com.mecaps.posDev.Controller;
 
 import com.mecaps.posDev.Entity.Product;
 import com.mecaps.posDev.Request.ProductRequest;
+import com.mecaps.posDev.Response.FullResponse;
 import com.mecaps.posDev.Response.ProductResponse;
 import com.mecaps.posDev.Service.ProductService;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +39,12 @@ public class ProductController
         return productService.getProduct();
         }
 
+        @GetMapping("/getAllDetailThoughProductId/{id}")
+        public FullResponse getAllDetailThoughProductId(@PathVariable Long id ){
+        return productService.getAllDetailThoughProductId(id);
+
+
+        }
 
 }
 

@@ -2,6 +2,7 @@ package com.mecaps.posDev.Service;
 
 import com.mecaps.posDev.Entity.Product;
 import com.mecaps.posDev.Request.ProductRequest;
+import com.mecaps.posDev.Response.FullResponse;
 import com.mecaps.posDev.Response.ProductResponse;
 
 import java.util.List;
@@ -15,4 +16,6 @@ public interface ProductService {
     List<ProductResponse> getProduct();
 
     ProductResponse createProduct(ProductRequest req);
+
+    FullResponse getAllDetailThoughProductId(Long id);
 }
