@@ -1,6 +1,7 @@
 package com.mecaps.posDev.Request;
 
 import com.mecaps.posDev.Entity.Product;
+import com.mecaps.posDev.Entity.ProductVariant;
 import lombok.Data;
 
 @Data
@@ -10,6 +11,6 @@ public class ProductVariantRequest {
     private Double product_variant_price;
     private Boolean refundable;
     private String product_variant_value;
-
+    private Long productVariant;
     private ProductInventoryRequest productInventoryRequest;
 }

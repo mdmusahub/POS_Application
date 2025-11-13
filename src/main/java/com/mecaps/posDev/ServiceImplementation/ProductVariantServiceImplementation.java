@@ -36,8 +36,8 @@ public class ProductVariantServiceImplementation implements ProductVariantServic
         .ifPresent(present->{
             throw new ProductVariantAlreadyExist("This product variant is  already found " + productVariantRequest.getProduct_variant_name()) ;
         });
-        Product product = productRepository.findById(productVariantRequest.getProduct_id()).orElseThrow(()->
-        new ProductNotFoundException("This Product Id is  Not Found " + productVariantRequest.getProduct_id())); // correct the getter method for fetching the product id
+        Product product = productRepository.findById(productVariantRequest.getProductVariant()).orElseThrow(()->
+        new ProductNotFoundException("This Product Id is  Not Found " + productVariantRequest.getProductVariant())); // correct the getter method for fetching the product id
 
         ProductVariant productVariant = new ProductVariant();
         productVariant.setVariantName(productVariantRequest.getProduct_variant_name());
@@ -69,8 +69,8 @@ public class ProductVariantServiceImplementation implements ProductVariantServic
     public ProductVariantResponse updateProductVariant(Long id, ProductVariantRequest productVariantRequest){
         ProductVariant productVariant1 = productVariantRepository.findById(id).orElseThrow(()->
                 new ProductVariantNotFoundException("This product variant Id is not found " + id));
-        Product product = productRepository.findById(productVariantRequest.getProduct_id()).orElseThrow(()->
-                new ProductNotFoundException("This Product Id is not found " + productVariantRequest.getProduct_id()));
+        Product product = productRepository.findById(productVariantRequest.getProductVariant()).orElseThrow(()->
+                new ProductNotFoundException("This Product Id is not found " + productVariantRequest.getProductVariant()));
         productVariant1.setVariantName(productVariantRequest.getProduct_variant_name());
         productVariant1.setProduct_variant_value(productVariantRequest.getProduct_variant_value());
         productVariant1.setProduct_variant_price(productVariantRequest.getProduct_variant_price());
