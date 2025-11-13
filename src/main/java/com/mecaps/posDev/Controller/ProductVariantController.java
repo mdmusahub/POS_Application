@@ -4,6 +4,7 @@ import com.mecaps.posDev.Request.ProductVariantRequest;
 import com.mecaps.posDev.Response.ProductVariantResponse;
 import com.mecaps.posDev.Service.ProductVariantService;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -62,5 +63,11 @@ final ProductVariantService productVariantService;
                      @RequestParam(defaultValue = "asc") String direction)
             {
               return productVariantService.getPaginatedProductVariants(page,size,sortBy,direction);
+            }
+
+            @GetMapping("/getProudctVariantById/{id}")
+    public ResponseEntity<ProductVariantResponse> findProductVariantById(@PathVariable Long id){
+        ProductVariantResponse productVariantResponse = productVariantService.findProductVariantById(id);
+        return ResponseEntity.ok(productVariantResponse);
             }
 }

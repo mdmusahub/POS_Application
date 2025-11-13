@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class ProductVariant {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productVariantId;
 
     @Column(name = "variant_name", nullable = false)

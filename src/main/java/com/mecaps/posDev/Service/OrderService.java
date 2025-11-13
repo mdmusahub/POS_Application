@@ -10,4 +10,5 @@ public interface OrderService {
     List<OrderResponse> getAll();
     OrderResponse getById(Long orderId);
     String deleteOrder(Long order_id);
+    OrderResponse updateOrder(Long id, OrderRequest orderRequest);
 }
