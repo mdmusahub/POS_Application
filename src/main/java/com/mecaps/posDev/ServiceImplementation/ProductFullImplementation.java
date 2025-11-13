@@ -46,7 +46,7 @@ Product product = new Product();
 product.setProductName(productFullRequest.getProduct_name());
 product.setProduct_description(productFullRequest.getProduct_description());
 product.setSku(productFullRequest.getSku());
-product.setCategory_id(category);
+product.setCategoryId(category);
     Product save1 = productRepository.save(product);
 
 if(productFullRequest.getProductVariantRequests()!= null && !productFullRequest.getProductVariantRequests().isEmpty()) {
@@ -58,20 +58,21 @@ if(productFullRequest.getProductVariantRequests()!= null && !productFullRequest.
         productVariant.setProduct_variant_value(request.getProduct_variant_value());
         productVariant.setRefundable(request.getRefundable());
         productVariant.setProduct_variant_price(request.getProduct_variant_price());
-        productVariant.setProduct_id(save1);
+        productVariant.setProductId(save1);
 
         ProductVariant save2 = productVariantRepository.save(productVariant);
 
         if(request.getProductInventoryRequest()!=null){
             ProductInventoryRequest productInventoryRequest = request.getProductInventoryRequest();
+
 // Creating ProductInventory
             ProductInventory productInventory = new ProductInventory();
 
             productInventory.setLocation(productInventoryRequest.getLocation());
             productInventory.setQuantity(productInventoryRequest.getQuantity());
             productInventory.setProductVariant(save2);
-            productInventory.setProduct_id(save1);
-ProductInventory save3 = productInventoryRepository.save(productInventory);
+            productInventory.setProductId(save1);
+            ProductInventory save3 = productInventoryRepository.save(productInventory);
 
         }
 

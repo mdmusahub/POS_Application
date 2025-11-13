@@ -33,7 +33,7 @@ public class AuthController {
             .orElseThrow(()->new RuntimeException("User not found " + request.getEmail())) ;
 
     if(!passwordEncoder.matches(request.getPassword(),user.getPassword())){
-        throw new RuntimeException("Invalide Credatial");
+        throw new RuntimeException("Invalid Credential");
     }
 
     String token = jwtService.generateAccessToken(user.getEmail(), user.getRole());

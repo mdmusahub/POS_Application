@@ -81,7 +81,7 @@ public class OrderServiceImpl implements OrderService {
             ProductVariant productVariant = productVariantRepository.findById(itemRequest.getProduct_variant_id())
                     .orElseThrow(() -> new ProductVariantNotFoundException("Product Variant Not Found"));
 
-            Category category = product.getCategory_id();
+            Category category = product.getCategoryId();
 
             GstTax gstTax = gstTaxRepository.findByCategory(category)
                     .orElseGet(() -> {
@@ -124,9 +124,9 @@ public class OrderServiceImpl implements OrderService {
             orderItem.setProductVariant(productVariant);
 
             //here we check inventory stock before set in orderItem entity. If order quantity is greater than inventory quantity then this will throw an exception.
-            ProductInventory inventory = productInventoryRepository.findByProductVariant_productVariantId(itemRequest.getProduct_variant_id())
+            ProductInventory inventory = productInventoryRepository.findByproductVariant(productVariant)
                     .orElseThrow(() -> new ProductVariantNotFoundException(
-                            "Product Variant Not Found" + productVariant.getProduct_id()));
+                            "Product Variant Not Found" + productVariant.getProductId()));
             if (inventory.getQuantity() < itemRequest.getQuantity()) {
                 throw new OutOfStockException("Requested " + itemRequest.getQuantity() + " but only " + inventory.getQuantity() + " available.");
             }
@@ -175,7 +175,7 @@ public class OrderServiceImpl implements OrderService {
         // managing inventory
         for (OrderItem orderItem : orderItemList) {
             ProductVariant productVariant = orderItem.getProductVariant();
-            ProductInventory productInventory = productInventoryRepository.findByProductVariant_productVariantId(productVariant.getProductVariantId())
+            ProductInventory productInventory = productInventoryRepository.findByproductVariant(productVariant)
                     .orElseThrow(() -> new ProductVariantNotFoundException(
                             "Product Variant Not Found" + productVariant.getProductVariantId()));
             productInventory.setQuantity(productInventory.getQuantity() - orderItem.getQuantity());
@@ -250,7 +250,7 @@ public class OrderServiceImpl implements OrderService {
 
         for (OrderItem orderItem : order.getOrder_items()) {
             ProductVariant productVariant = orderItem.getProductVariant();
-            ProductInventory productInventory = productInventoryRepository.findByProductVariant_productVariantId(productVariant.getProductVariantId())
+            ProductInventory productInventory = productInventoryRepository.findByproductVariant(productVariant)
                     .orElseThrow(() -> new
                             ProductNotFoundException("Inventory not found for this Variant : " + productVariant.getProductVariantId()));
             productInventory.setQuantity(productInventory.getQuantity() + orderItem.getQuantity());
@@ -275,7 +275,7 @@ public class OrderServiceImpl implements OrderService {
                     orElseThrow(() -> new ProductVariantNotFoundException("Product variant not found"));
 
 
-            Category category = product.getCategory_id();
+            Category category = product.getCategoryId();
 
             GstTax gstTax = gstTaxRepository.findByCategory(category).orElseGet(() -> {
                 Category category1 = category.getParent_category();
@@ -314,8 +314,8 @@ public class OrderServiceImpl implements OrderService {
             orderItem.setQuantity(orderItemRequest.getQuantity());
 
 //here we check inventory
-            ProductInventory productInventory = productInventoryRepository.findByProductVariant_productVariantId(productVariant.getProductVariantId()).
-                    orElseThrow(() -> new ProductVariantNotFoundException("Product Variant Vot Found"));
+            ProductInventory productInventory =
+                    productInventoryRepository.findByproductVariant(productVariant).orElseThrow(() -> new ProductVariantNotFoundException("Product Variant Vot Found"));
             if (productInventory.getQuantity() < orderItemRequest.getQuantity()) {
                 throw new OutOfStockException("Requested " + orderItemRequest.getQuantity() + " but only " + productInventory.getQuantity() + " available.");
             }
