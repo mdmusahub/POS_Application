@@ -1,6 +1,7 @@
 package com.mecaps.posDev.ServiceImplementation;
 
 import com.mecaps.posDev.Entity.*;
+import com.mecaps.posDev.Enums.PaymentMode;
 import com.mecaps.posDev.Enums.WaiverMode;
 import com.mecaps.posDev.Exception.OutOfStockException;
 import com.mecaps.posDev.Exception.ProductNotFoundException;
@@ -48,8 +49,22 @@ public class OrderServiceImpl implements OrderService {
         order.setUser_email(orderRequest.getUser_email());
         order.setOrder_status(orderRequest.getOrder_status());
         order.setPayment_mode(orderRequest.getPaymentMode());
-        order.setCash_amount(orderRequest.getCash_amount());
-        order.setOnline_amount(orderRequest.getOnline_amount());
+        if (orderRequest.getPaymentMode() == PaymentMode.CASH) {
+            //  Cash only
+            order.setCash_amount(orderRequest.getCash_amount() != null ? orderRequest.getCash_amount() : "0.0");
+            order.setOnline_amount("0.0");
+
+        } else if (orderRequest.getPaymentMode() == PaymentMode.UPI) {
+            // UPI only
+            order.setOnline_amount(orderRequest.getOnline_amount() != null ? orderRequest.getOnline_amount() : "0.0");
+            order.setCash_amount("0.0");
+
+        } else if (orderRequest.getPaymentMode() == PaymentMode.MIXED) {
+            // Cash + UPI
+            order.setCash_amount(orderRequest.getCash_amount() != null ? orderRequest.getCash_amount() : "0.0");
+            order.setOnline_amount(orderRequest.getOnline_amount() != null ? orderRequest.getOnline_amount() : "0.0");
+        }
+
         order.setDiscount(0d);
         order.setTax(0.0);
         order.setTotal_amount(0.0);

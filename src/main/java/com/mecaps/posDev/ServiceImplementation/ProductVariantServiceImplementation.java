@@ -48,8 +48,6 @@ public class ProductVariantServiceImplementation implements ProductVariantServic
         return new ProductVariantResponse(pv);
     }
 
-
-
     public List<ProductVariantResponse> getAll(){
         List<ProductVariant> productVariantList =productVariantRepository.findAll();
         return productVariantList.stream().map(ProductVariantResponse::new).toList();
@@ -60,8 +58,6 @@ public class ProductVariantServiceImplementation implements ProductVariantServic
                 new ProductVariantNotFoundException("This Product Variant Id is  Not Found " + variantId)) ;
         return new ProductVariantResponse(productVariant);
     }
-
-
 
     public String deleteProductVariant(Long id){
         ProductVariant productVariant = productVariantRepository.findById(id).orElseThrow(()->new ProductVariantNotFoundException("This product variant Id is not found " + id));
@@ -82,8 +78,6 @@ public class ProductVariantServiceImplementation implements ProductVariantServic
         ProductVariant save = productVariantRepository.save(productVariant1);
         return new ProductVariantResponse(save);
 }
-
-
 
 public List<ProductVariantResponse> getPaginatedProductVariants(int page, int size, String sortBy, String direction) {
         Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
