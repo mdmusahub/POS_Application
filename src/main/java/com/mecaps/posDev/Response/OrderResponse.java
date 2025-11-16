@@ -26,13 +26,8 @@ public class OrderResponse {
     private Double tax;
     private Double total_amount;
     private String user_phone_number;
-
-
     private String customer_email;
     private String customer_phone;
-
-
-
     private LocalDateTime order_date;
 
     //  Default constructor

@@ -41,7 +41,7 @@ public class ProductServiceImplementation implements ProductService {
 
     public ProductResponse createProduct(ProductRequest req) {
         productRepository.findByProductName(req.getProduct_name())
-                .ifPresent(present->{throw  new ProductAlreadyExist("This product is already found " + req.getProduct_name());
+                .ifPresent(present->{throw  new ProductAlreadyExist("This product is already present " + req.getProduct_name());
         });
         Product product = new Product();
         Category category = categoryRepository.findById(req.getCategory_id())

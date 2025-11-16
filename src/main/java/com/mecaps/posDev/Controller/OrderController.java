@@ -25,6 +25,11 @@ public class OrderController {
         return orderService.getAll();
     }
 
+    @PutMapping("/update/{id}")
+    public OrderResponse updateOrder(@PathVariable Long id, @RequestBody OrderRequest orderRequest) {
+        return orderService.updateOrder(id, orderRequest);
+    }
+
     @GetMapping("/get/{orderId}")
     public OrderResponse getOrderById(@PathVariable Long orderId) {
         return orderService.getById(orderId);

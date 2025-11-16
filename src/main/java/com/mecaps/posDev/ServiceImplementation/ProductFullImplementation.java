@@ -55,9 +55,9 @@ if(productFullRequest.getProductVariantRequests()!= null && !productFullRequest.
 // Creating ProductVariant
         ProductVariant productVariant = new ProductVariant();
         productVariant.setVariantName(request.getProduct_variant_name());
-        productVariant.setProduct_variant_value(request.getProduct_variant_value());
+        productVariant.setProductVariantValue(request.getProduct_variant_value());
         productVariant.setRefundable(request.getRefundable());
-        productVariant.setProduct_variant_price(request.getProduct_variant_price());
+        productVariant.setProductVariantPrice(request.getProduct_variant_price());
         productVariant.setProductId(save1);
 
         ProductVariant save2 = productVariantRepository.save(productVariant);

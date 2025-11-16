@@ -155,6 +155,18 @@ public class GlobalException  {  //  // fixed class name
     }
 
 
+    @ExceptionHandler(OrderNotFound.class)
+    public ResponseEntity<ErrorResponse> handleOrderNotFound(OrderNotFound exception , HttpServletRequest httpServletRequest){
+        ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                exception.getMessage(),
+                httpServletRequest.getRequestURI()
+        );
+        return new ResponseEntity<>(errorResponse , HttpStatus.NOT_FOUND);
+    }
+
 
 
 }

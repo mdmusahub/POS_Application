@@ -65,7 +65,7 @@ final ProductVariantService productVariantService;
               return productVariantService.getPaginatedProductVariants(page,size,sortBy,direction);
             }
 
-            @GetMapping("/getProudctVariantById/{id}")
+            @GetMapping("/getProductVariantById/{id}")
     public ResponseEntity<ProductVariantResponse> findProductVariantById(@PathVariable Long id){
         ProductVariantResponse productVariantResponse = productVariantService.findProductVariantById(id);
         return ResponseEntity.ok(productVariantResponse);
