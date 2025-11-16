@@ -1,10 +1,13 @@
 package com.mecaps.posDev.Controller;
 
 import com.mecaps.posDev.Entity.Product;
+import com.mecaps.posDev.Entity.ProductVariant;
 import com.mecaps.posDev.Request.ProductRequest;
 import com.mecaps.posDev.Response.FullResponse;
 import com.mecaps.posDev.Response.ProductResponse;
+import com.mecaps.posDev.Response.ProductVariantResponse;
 import com.mecaps.posDev.Service.ProductService;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,11 +16,11 @@ import java.util.List;
 @RequestMapping("/product")
 public class ProductController
 {
-    private final ProductService productService;
+        private final ProductService productService;
 
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
+        public ProductController(ProductService productService) {
+            this.productService = productService;
+        }
 
         @PostMapping("/createProduct")
         public ProductResponse createProduct(@RequestBody ProductRequest req) {
@@ -39,12 +42,21 @@ public class ProductController
         return productService.getProduct();
         }
 
+
         @GetMapping("/getAllDetailThoughProductId/{id}")
-        public FullResponse getAllDetailThoughProductId(@PathVariable Long id ){
-        return productService.getAllDetailThoughProductId(id);
-
-
+        public FullResponse getAllDetailThoughProductId(@PathVariable Long id ) {
+            return productService.getAllDetailThoughProductId(id);
         }
+
+        @GetMapping("/paginatedProduct")
+        public Page<ProductResponse> getPaginatedProduct(
+                @RequestParam(defaultValue = "0") int page,
+                @RequestParam(defaultValue = "10") int size,
+                @RequestParam(defaultValue = "min") String sortType) {
+
+            return productService.getPaginatedProduct(page, size, sortType);
+        }
+
 
 }
 
