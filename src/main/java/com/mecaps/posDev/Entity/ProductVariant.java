@@ -33,7 +33,7 @@ public class ProductVariant {
     @OneToOne(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true)
     private ProductInventory inventory;
 
-    @OneToMany(mappedBy = "product_variant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @OneToOne(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true)
