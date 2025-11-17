@@ -18,7 +18,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     FROM Product p
     JOIN p.product_variant v
     GROUP BY p
-    ORDER BY MIN(v.product_variant_price) ASC
+    ORDER BY MIN(v.productVariantPrice)
 """)
     Page<Product> findAllByMinVariantPrice(Pageable pageable);
 
@@ -27,9 +27,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     FROM Product p
     JOIN p.product_variant v
     GROUP BY p
-    ORDER BY MAX(v.product_variant_price) ASC
+    ORDER BY MAX(v.productVariantPrice)
 """)
     Page<Product> findAllByMaxVariantPrice(Pageable pageable);
-
 
 }

@@ -11,34 +11,34 @@ public class ReturnOrderItem
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long return_order_item_id;
+    private Long returnOrderItemId;
 
     @Column(nullable = false)
-    private Double refund_amount;
+    private Double refundAmount;
 
     @Column(nullable = false)
-    private Long return_quantity;
+    private Long returnQuantity;
 
     @Enumerated(EnumType.STRING)
-    private ReturnReason return_reason;
+    private ReturnReason returnReason;
 
     @Enumerated(EnumType.STRING)
-    private ReturnStatus return_status;
+    private ReturnStatus returnStatus;
 
     @Column(nullable = false)
-    private Double unit_price;
+    private Double unitPrice;
 
     @ManyToOne
-    private Product product_id;
+    private Product productId;
 
     @ManyToOne
-    private ProductVariant product_variant_id;
+    private ProductVariant productVariantId;
 
     @ManyToOne
-    private OrderItem order_item_id;
+    private OrderItem orderItemId;
 
     @ManyToOne
-    private Order order_id;
+    private Order orderId;
 
 
 }

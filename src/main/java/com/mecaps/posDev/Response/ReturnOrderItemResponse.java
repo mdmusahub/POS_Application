@@ -25,17 +25,17 @@ public class ReturnOrderItemResponse {
 
     public ReturnOrderItemResponse(ReturnOrderItem returnOrderItem) {
 
-        this.refund_amount = returnOrderItem.getRefund_amount();
-        this.return_quantity = returnOrderItem.getReturn_quantity();
-        this.unit_price = returnOrderItem.getUnit_price();
-        this.orderId = returnOrderItem.getOrder_id().getOrder_id();
-        this.product_name = returnOrderItem.getProduct_id().getProductName();
-        this.product_id = returnOrderItem.getProduct_id().getProduct_id();
-        this.variantName = returnOrderItem.getProduct_variant_id().getVariantName();
-        this.variantId = returnOrderItem.getProduct_variant_id().getProduct_variant_id();
-        this.product_variant_value = returnOrderItem.getProduct_variant_id().getProduct_variant_value();
-        this.return_reason = returnOrderItem.getReturn_reason();
-        this.return_status = returnOrderItem.getReturn_status();
+        this.refund_amount = returnOrderItem.getRefundAmount();
+        this.return_quantity = returnOrderItem.getReturnQuantity();
+        this.unit_price = returnOrderItem.getUnitPrice();
+        this.orderId = returnOrderItem.getOrderId().getOrderId();
+        this.product_name = returnOrderItem.getProductId().getProductName();
+        this.product_id = returnOrderItem.getProductId().getProductId();
+        this.variantName = returnOrderItem.getProductVariantId().getVariantName();
+        this.variantId = returnOrderItem.getProductVariantId().getProductVariantId();
+        this.product_variant_value = returnOrderItem.getProductVariantId().getProductVariantValue();
+        this.return_reason = returnOrderItem.getReturnReason();
+        this.return_status = returnOrderItem.getReturnStatus();
 
     }
 }

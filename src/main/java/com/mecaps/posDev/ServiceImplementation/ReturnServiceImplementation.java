@@ -71,23 +71,23 @@ public class ReturnServiceImplementation implements ReturnService {
 
             // create ReturnOrderItem
             ReturnOrderItem returnItem = new ReturnOrderItem();
-            returnItem.setOrder_id(order);
-            returnItem.setOrder_item_id(orderItem);
-            returnItem.setProduct_id(product);
-            returnItem.setProduct_variant_id(variant);
-            returnItem.setUnit_price(unitPrice);
-            returnItem.setReturn_quantity(itemReq.getReturn_quantity());
-            returnItem.setRefund_amount(refundAmount);
-            returnItem.setReturn_reason(itemReq.getReturn_reason());
-            returnItem.setReturn_status(itemReq.getReturn_status());
+            returnItem.setOrderId(order);
+            returnItem.setOrderItemId(orderItem);
+            returnItem.setProductId(product);
+            returnItem.setProductVariantId(variant);
+            returnItem.setUnitPrice(unitPrice);
+            returnItem.setReturnQuantity(itemReq.getReturn_quantity());
+            returnItem.setRefundAmount(refundAmount);
+            returnItem.setReturnReason(itemReq.getReturn_reason());
+            returnItem.setReturnStatus(itemReq.getReturn_status());
 
             returnOrderItems.add(returnItem);
 
             // inventory update (increase stock back)
-            ProductInventory inventory = productInventoryRepository
-                    .findByProductVariant(variant.getProduct_variant_id())
-                    .orElseThrow(() -> new RuntimeException("Inventory not found for variant: " + variant.getProduct_variant_id()));
+            ProductInventory inventory = productInventoryRepository.findByproductVariant(variant)
+                    .orElseThrow(() -> new RuntimeException("Inventory not found for variant: "));
 
+            // in inventory database add the quantity of stocks return and update the database
             inventory.setQuantity(inventory.getQuantity() + itemReq.getReturn_quantity());
             productInventoryRepository.save(inventory);
 
@@ -113,7 +113,7 @@ public class ReturnServiceImplementation implements ReturnService {
     public String deleteReturnOrder(Long id) {
         ReturnOrder returnOrder = returnOrderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("This Product Id is not found " + id));
         Order order = returnOrder.getOrder();
-        List<ReturnOrderItem> returnOrderItem = returnOrderItemRepository.findAllReturnOrderItemsByOrder(order);
+        List<ReturnOrderItem> returnOrderItem = returnOrderItemRepository.findAllReturnOrderItemsByOrderId(order);
         returnOrderItemRepository.deleteAll(returnOrderItem);
         returnOrderRepository.delete(returnOrder);
         return "Deleted successfully";
@@ -121,7 +121,7 @@ public class ReturnServiceImplementation implements ReturnService {
 
     public ReturnOrderResponse getById(Long id) {
        ReturnOrder returnOrder = returnOrderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Return order id not found"));
-       List<ReturnOrderItem> returnOrderItems =  returnOrderItemRepository.findAllReturnOrderItemsByOrder(returnOrder.getOrder());
+       List<ReturnOrderItem> returnOrderItems =  returnOrderItemRepository.findAllReturnOrderItemsByOrderId(returnOrder.getOrder());
 
         return null;
     }
@@ -129,7 +129,7 @@ public class ReturnServiceImplementation implements ReturnService {
     public List<ReturnOrderResponse> getReturnOrder() {
        List<ReturnOrder> returnOrders = returnOrderRepository.findAll();
         return returnOrders.stream().map(returnOrder -> {
-            List<ReturnOrderItem> returnOrderItems = returnOrderItemRepository.findAllReturnOrderItemsByOrder(returnOrder.getOrder());
+            List<ReturnOrderItem> returnOrderItems = returnOrderItemRepository.findAllReturnOrderItemsByOrderId(returnOrder.getOrder());
        return new ReturnOrderResponse(returnOrder, returnOrderItems);
         }).toList();
     }
