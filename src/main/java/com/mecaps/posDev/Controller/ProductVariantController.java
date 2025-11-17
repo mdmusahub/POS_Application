@@ -4,6 +4,7 @@ import com.mecaps.posDev.Request.ProductVariantRequest;
 import com.mecaps.posDev.Response.ProductVariantResponse;
 import com.mecaps.posDev.Service.ProductVariantService;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +19,7 @@ final ProductVariantService productVariantService;
     }
 
 
-    // FOR CREATE //
+               // FOR CREATE //
 
             @PostMapping("/createProductVariant")
             public ProductVariantResponse createProductVariant(@RequestBody ProductVariantRequest productVariantRequest){
@@ -49,6 +50,11 @@ final ProductVariantService productVariantService;
             return productVariantService.deleteProductVariant(id);
             }
 
+            @GetMapping("/get/{id}")
+            public ProductVariantResponse getProductVariantById(@PathVariable Long id){
+            return productVariantService.findProductVariantById(id);
+            }
+
             @GetMapping("/paginated")
             public List<ProductVariantResponse> getPaginatedProductVariants
                     (@RequestParam(defaultValue = "0") int page,
@@ -57,5 +63,11 @@ final ProductVariantService productVariantService;
                      @RequestParam(defaultValue = "asc") String direction)
             {
               return productVariantService.getPaginatedProductVariants(page,size,sortBy,direction);
+            }
+
+            @GetMapping("/getProductVariantById/{id}")
+    public ResponseEntity<ProductVariantResponse> findProductVariantById(@PathVariable Long id){
+        ProductVariantResponse productVariantResponse = productVariantService.findProductVariantById(id);
+        return ResponseEntity.ok(productVariantResponse);
             }
 }

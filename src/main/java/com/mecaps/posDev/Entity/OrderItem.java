@@ -20,7 +20,7 @@ public class OrderItem {
     @Column(nullable = false)
     private Double unit_price;
 
-    // 🧾 --- GST / Tax Details ---
+    //GST Tax Details ---
     @Column(nullable = false)
     private Double gstRate;      // GST rate applied (e.g., 5, 12, 18, 28)
 
@@ -33,7 +33,6 @@ public class OrderItem {
     @Column(nullable = false)
     private Double s_gstAmount;   // State GST part
 
-    // Optional: reference back to which GST rule was used
     @ManyToOne
     @JoinColumn(name = "id")
     private GstTax gstTax;

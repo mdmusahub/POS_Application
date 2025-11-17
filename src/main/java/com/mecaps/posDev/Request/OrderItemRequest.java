@@ -9,5 +9,4 @@ public class OrderItemRequest {
 private Long product_id;
 private Long product_variant_id;
 private Long quantity;
-private Double unit_price;
 }
