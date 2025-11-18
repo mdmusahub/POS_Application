@@ -31,8 +31,8 @@ public class ProductInventoryServiceImplementation implements ProductInventorySe
 
     public ProductInventoryResponse createInventory(ProductInventoryRequest request){
       Product product = productRepository
-              .findById(request.getProduct_id())
-              .orElseThrow(()-> new ProductNotFoundException("This product Id is not found " + request.getProduct_id()));
+              .findById(request.getProduct_variant_id())
+              .orElseThrow(()-> new ProductNotFoundException("This product Id is not found " + request.getProduct_variant_id()));
 
         ProductVariant variant = productVariantRepository
                 .findById(request.getProduct_variant_id())
@@ -57,8 +57,8 @@ public class ProductInventoryServiceImplementation implements ProductInventorySe
                 .orElseThrow(()-> new ProductInventoryNotFoundException("This product inventory Id is not found " + id));
 
         Product product = productRepository
-                .findById(request.getProduct_id())
-                .orElseThrow(()-> new ProductNotFoundException("This product Id is not found " + request.getProduct_id()));
+                .findById(request.getProduct_variant_id())
+                .orElseThrow(()-> new ProductNotFoundException("This product Id is not found " + request.getProduct_variant_id()));
 
         ProductVariant variant = productVariantRepository
                 .findById(request.getProduct_variant_id())
