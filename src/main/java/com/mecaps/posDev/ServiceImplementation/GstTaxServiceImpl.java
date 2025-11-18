@@ -40,11 +40,9 @@ public class GstTaxServiceImpl implements GstTaxService {
     @Override
     public List<GstTaxResponse> getAllGstTax() {
         List<GstTax> gstTaxList = gstTaxRepository.findAll();
-
         if (gstTaxList.isEmpty()) {
             throw new RuntimeException("No GST tax records found");
         }
-
         return gstTaxList.stream()
                 .map(GstTaxResponse::new)
                 .collect(Collectors.toList());
@@ -81,7 +79,6 @@ public class GstTaxServiceImpl implements GstTaxService {
     public String deleteGstTax(Long id) {
         GstTax gstTax = gstTaxRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("GST tax not found with ID: " + id));
-
         gstTaxRepository.delete(gstTax);
         return "GST tax deleted successfully";
     }

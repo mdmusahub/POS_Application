@@ -3,10 +3,7 @@ package com.mecaps.posDev.ServiceImplementation;
 import com.mecaps.posDev.Entity.*;
 import com.mecaps.posDev.Enums.PaymentMode;
 import com.mecaps.posDev.Enums.WaiverMode;
-import com.mecaps.posDev.Exception.OrderNotFound;
-import com.mecaps.posDev.Exception.OutOfStockException;
-import com.mecaps.posDev.Exception.ProductNotFoundException;
-import com.mecaps.posDev.Exception.ProductVariantNotFoundException;
+import com.mecaps.posDev.Exception.*;
 import com.mecaps.posDev.Repository.*;
 import com.mecaps.posDev.Request.OrderItemRequest;
 import com.mecaps.posDev.Request.OrderRequest;
@@ -16,6 +13,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +35,7 @@ public class OrderServiceImpl implements OrderService {
 
     // create order
     @Transactional
+    @Override
     public OrderResponse createOrder(OrderRequest orderRequest) {
         Customer customer = customerRepository.findByPhoneNumber(orderRequest.getUser_phone_number()).
                 orElseGet(() -> {
@@ -99,19 +100,45 @@ public class OrderServiceImpl implements OrderService {
             // set total base price in this variable so later we use in tax calculation
             double baseTotalPrice = productVariant.getProductVariantPrice() * itemRequest.getQuantity();
             double discountedPrice = baseTotalPrice;
+
             // Here we set Product level discount
-            Discount discount = discountRepository.findByproductVariant_productVariantId(productVariant.getProductVariantId())
+            Discount discount = discountRepository
+                    .findByproductVariant_productVariantId(productVariant.getProductVariantId())
                     .orElse(null);
+
             if (discount != null) {
+
+                // Condition 1: Must be active
+                if (!discount.getIs_active()) {
+                    continue;
+                }
+
+                // Condition 2: Must be within start & end date
+                LocalDateTime now = LocalDateTime.now();
+                if (discount.getStart_date_time().isAfter(now) ||
+                        discount.getEnd_date_time().isBefore(now)) {
+                    continue;
+                }
+
+                // Condition 3: Must have valid value
+                if (discount.getDiscount_value() == null || discount.getDiscount_value() <= 0) {
+                    continue;
+                }
+
                 double discountAmount = 0.0;
+
                 if (discount.getWaiver_mode() == WaiverMode.PERCENTAGE) {
                     discountAmount = discountedPrice * discount.getDiscount_value() / 100;
+
                 } else if (discount.getWaiver_mode() == WaiverMode.FLAT_AMOUNT) {
                     discountAmount = discount.getDiscount_value() * itemRequest.getQuantity();
                 }
+
                 discountedPrice -= discountAmount;
+
                 order.setDiscount(order.getDiscount() + discountAmount);
             }
+
 
             //  Price & GST Calculations
             double gstRate = gstTax.getGst_rate();
@@ -134,17 +161,17 @@ public class OrderServiceImpl implements OrderService {
             orderItem.setQuantity(itemRequest.getQuantity());
 
             // Set unit price and calculated amounts
-            orderItem.setUnit_price(productVariant.getProductVariantPrice());
+            orderItem.setUnit_price(round(productVariant.getProductVariantPrice()));
 
             // Store GST details in OrderItem
             orderItem.setGstRate(gstRate);
-            orderItem.setGstAmount(gstAmount);
-            orderItem.setC_gstAmount(cGstAmount);
-            orderItem.setS_gstAmount(sGstAmount);
+            orderItem.setGstAmount(round(gstAmount));
+            orderItem.setC_gstAmount(round(cGstAmount));
+            orderItem.setS_gstAmount(round(sGstAmount));
             orderItem.setGstTax(gstTax);
 
             // Final total (discounted + GST)
-            orderItem.setTotal_price(discountedPrice + gstAmount);
+            orderItem.setTotal_price(round(discountedPrice + gstAmount));
 
 
             subtotalBeforeTax += discountedPrice; // here we store total base price so later we calculate discount on order level discount
@@ -165,12 +192,24 @@ public class OrderServiceImpl implements OrderService {
         }
 
         if (orderLevelDiscount > 0) {
-            order.setDiscount(order.getDiscount() + orderLevelDiscount);
+            order.setDiscount(round(order.getDiscount() + orderLevelDiscount));
             subtotalBeforeTax -= orderLevelDiscount;
         }
 
-        order.setTax(totalTaxAmount);
-        order.setTotal_amount(subtotalBeforeTax + totalTaxAmount); // here we set total order price after checking order level discount is present or not
+        double calculatedOrderTotal = round(totalTaxAmount + subtotalBeforeTax);
+        order.setTax(round(totalTaxAmount));
+        order.setTotal_amount(calculatedOrderTotal);
+
+        // here we check total amount or payment amount is equal to Total amount before saving
+        double paidAmount = Double.parseDouble(order.getOnline_amount()) + Double.parseDouble(order.getCash_amount());
+        if(paidAmount > calculatedOrderTotal){
+            throw new OrderPaymentException("Payment is less than total amount" + paidAmount + " Required " + calculatedOrderTotal);
+        }
+        if(paidAmount < calculatedOrderTotal){
+            throw new OrderPaymentException("Payment exceeds total amount" + paidAmount + " Required " + calculatedOrderTotal);
+        }
+
+        order.setTotal_amount(round(paidAmount));
         Order save = orderRepository.save(order);
 
         // managing inventory
@@ -183,30 +222,9 @@ public class OrderServiceImpl implements OrderService {
             productInventoryRepository.save(productInventory);
         }
 
-//      Send confirmation email
+        //Send confirmation email
         String to = order.getUser_email();
         String subject = "Order Confirmed - #" + order.getOrderId();
-//        StringBuilder body = new StringBuilder();
-//        body.append("Hello.\n\n");
-//        body.append("Your order has been confirmed successfully!\n\n");
-//        body.append("Order Details:\n");
-//        body.append("Order ID: ").append(order.getOrderId()).append("\n");
-//        body.append("Total Amount: ₹").append(order.getTotal_amount()).append("\n");
-//        body.append("Payment Mode: ").append(order.getPayment_mode()).append("\n");
-//        body.append("Status: ").append(order.getOrder_status()).append("\n\n");
-//        body.append("Thank you for shopping with us!\n");
-//        body.append("POS System Team");
-//
-//        if (to != null && !to.isEmpty()) {
-//            try {
-//                emailService.sendEmail(to, subject, body.toString());
-//                System.out.println("Order confirmation email sent to " + to);
-//            } catch (Exception e) {
-//                System.err.println("Failed to send confirmation email: " + e.getMessage());
-//            }
-//        } else {
-//            System.out.println("No email found for this customer. Skipping email notification.");
-//        }
 
         // Build HTML email
         String htmlContent = emailService.buildOrderConfirmationHtml(order);
@@ -226,6 +244,7 @@ public class OrderServiceImpl implements OrderService {
 
     // order update method
     @Transactional
+    @Override
     public OrderResponse updateOrder(Long id, OrderRequest orderRequest) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFound("Order not found with ID : " + id));
 
@@ -337,7 +356,7 @@ public class OrderServiceImpl implements OrderService {
             orderItem.setGstTax(gstTax);
 
             // Final total (discounted + GST)
-            orderItem.setTotal_price(discountedPrice + gstAmount);
+            orderItem.setTotal_price(round(discountedPrice + gstAmount));
 
             subtotalBeforeTax += discountedPrice;// here we store total base price so later we calculate discount on order level discount
             totalTaxAmount += gstAmount;// here we store total tax amount so later we can set this tax value in order entity
@@ -370,20 +389,30 @@ public class OrderServiceImpl implements OrderService {
         return new OrderResponse(order1);
     }
 
+    @Override
     public List<OrderResponse> getAll() {
         List<Order> all = orderRepository.findAll();
         return all.stream().map(OrderResponse::new).toList();
     }
 
+    @Override
     public OrderResponse getById(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("invalid order ID"));
         return new OrderResponse(order);
     }
 
+    @Override
     public String deleteOrder(Long order_id) {
         Order order = orderRepository.findById(order_id).orElseThrow(() -> new RuntimeException("Order not found"));
         orderRepository.delete(order);
         return "order deleted successfully";
     }
+
+    private double round(double value) {
+        return new BigDecimal(value)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
+    }
+
 
 }

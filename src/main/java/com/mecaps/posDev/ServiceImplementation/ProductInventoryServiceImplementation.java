@@ -28,7 +28,7 @@ public class ProductInventoryServiceImplementation implements ProductInventorySe
         this.productVariantRepository = productVariantRepository;
     }
 
-
+    @Override
     public ProductInventoryResponse createInventory(ProductInventoryRequest request){
       Product product = productRepository
               .findById(request.getProduct_id())
@@ -50,7 +50,7 @@ public class ProductInventoryServiceImplementation implements ProductInventorySe
         return new ProductInventoryResponse(save);
     }
 
-
+    @Override
     public String updatedInventory(Long id,ProductInventoryRequest request){
 
         ProductInventory productInventory = productInventoryRepository.findById(id)  // correct variable name of productInventory
@@ -73,16 +73,18 @@ public class ProductInventoryServiceImplementation implements ProductInventorySe
          return "Inventory updated successfully";
     }
 
-public List<ProductInventoryResponse> getAllProducts(){
-      List<ProductInventory> productInventoryList =  productInventoryRepository.findAll();
-       return productInventoryList.stream().map(ProductInventoryResponse :: new).toList();
-}
+    @Override
+    public List<ProductInventoryResponse> getAllProductsInventory(){
+          List<ProductInventory> productInventoryList =  productInventoryRepository.findAll();
+           return productInventoryList.stream().map(ProductInventoryResponse :: new).toList();
+    }
 
-public String deleteProduct(Long id){
-    ProductInventory inventory = productInventoryRepository.findById(id)  // add check method before deletion
-            .orElseThrow(() -> new ProductInventoryNotFoundException("Inventory not found: " + id));
-    productInventoryRepository.delete(inventory);
-  return "deleted successfully";
-}
+    @Override
+    public String deleteProductInventory(Long id){
+        ProductInventory inventory = productInventoryRepository.findById(id)  // add check method before deletion
+                .orElseThrow(() -> new ProductInventoryNotFoundException("Inventory not found: " + id));
+        productInventoryRepository.delete(inventory);
+      return "deleted successfully";
+    }
 
 }

@@ -19,11 +19,10 @@ public class UserController {
 
 
     @PostMapping("/createUser")
-    public String createUser(@RequestBody UserRequest userRequest){
+    public String createUser(@RequestBody UserRequest userRequest) {
         return userServiceImplementation.createUser(userRequest);
 
     }
-
 
 
 }

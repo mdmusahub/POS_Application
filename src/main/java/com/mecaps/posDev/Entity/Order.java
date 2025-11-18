@@ -40,7 +40,7 @@ public class Order {
     private String user_phone_number;
     private String user_email;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL,  orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> order_items = new ArrayList<>();
 
     @DateTimeFormat

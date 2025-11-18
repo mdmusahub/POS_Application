@@ -1,7 +1,7 @@
 package com.mecaps.posDev.Response;
 
-import com.mecaps.posDev.Entity.Order;
 import com.mecaps.posDev.Entity.Customer;
+import com.mecaps.posDev.Entity.Order;
 import com.mecaps.posDev.Enums.OrderStatus;
 import com.mecaps.posDev.Enums.PaymentMode;
 import lombok.Getter;
@@ -31,7 +31,8 @@ public class OrderResponse {
     private LocalDateTime order_date;
 
     //  Default constructor
-    public OrderResponse() {}
+    public OrderResponse() {
+    }
 
     // Constructor that takes Order entity and auto-fills data
     public OrderResponse(Order order) {

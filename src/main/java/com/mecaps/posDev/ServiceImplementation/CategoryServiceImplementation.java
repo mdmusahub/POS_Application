@@ -21,6 +21,7 @@ public class CategoryServiceImplementation implements CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
+   @Override
     public CategoryResponse createCategory(CategoryRequest req) {
         categoryRepository.findByCategoryName(req.getCategory_name())
                 .ifPresent(present->{throw
@@ -41,13 +42,13 @@ public class CategoryServiceImplementation implements CategoryService {
             return new CategoryResponse(save);
     }
 
-
+    @Override
     public List<CategoryResponse> getCategory() {
         List<Category> getCategory = categoryRepository.findAll();
         return getCategory.stream().map(CategoryResponse::new).toList();
     }
 
-
+    @Override
     public CategoryResponse updateCategory(Long id, CategoryRequest req) {
         Category  updateCategory = categoryRepository.findById(id).orElseThrow(()->
                 new CategoryNotFoundException("Category not Found " + id));
@@ -64,6 +65,7 @@ public class CategoryServiceImplementation implements CategoryService {
         return new CategoryResponse(save);
     }
 
+    @Override
     public String deleteCategory(Long id) {
         Category category = categoryRepository.findById(id).orElseThrow(()->
                 new CategoryNotFoundException("This Category Id is not found " + id));

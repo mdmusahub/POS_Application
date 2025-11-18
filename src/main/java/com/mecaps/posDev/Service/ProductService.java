@@ -20,6 +20,6 @@ public interface ProductService {
 
     FullResponse getAllDetailThoughProductId(Long id);
 
-    public Page<ProductResponse> getPaginatedProduct(int page, int size, String sortType);
+    List<ProductResponse> getPaginatedProduct(int page, int size, String sortType);
 
 }

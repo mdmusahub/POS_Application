@@ -12,10 +12,10 @@ public class ProductInventoryResponse {
     private String location;
     private Long quantity;
 
-   public ProductInventoryResponse(ProductInventory inventory){
-       this.location = inventory.getLocation();
-       this.quantity = inventory.getQuantity();
+    public ProductInventoryResponse(ProductInventory inventory) {
+        this.location = inventory.getLocation();
+        this.quantity = inventory.getQuantity();
 
 
-   }
+    }
 }

@@ -1,5 +1,4 @@
 package com.mecaps.posDev.ServiceImplementation;//package com.mecaps.posDev.ServiceImplementation;
-//
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.mail.SimpleMailMessage;
 //import org.springframework.mail.javamail.JavaMailSender;
@@ -28,8 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 @Service
 public class EmailService {
@@ -57,11 +56,20 @@ public class EmailService {
 
     public String buildOrderConfirmationHtml(Order order) {
         Context ctx = new Context();
+
         ctx.setVariable("orderId", order.getOrderId());
         ctx.setVariable("totalAmount", order.getTotal_amount());
         ctx.setVariable("paymentMode", order.getPayment_mode());
         ctx.setVariable("status", order.getOrder_status());
+        ctx.setVariable("discount", order.getDiscount());
+        ctx.setVariable("tax", order.getTax());
+        ctx.setVariable("cashAmount", order.getCash_amount());
+        ctx.setVariable("onlineAmount", order.getOnline_amount());
+
+        // MOST IMPORTANT → Pass product list
+        ctx.setVariable("items", order.getOrder_items());
 
         return templateEngine.process("email/order-confirmation", ctx);
     }
+
 }

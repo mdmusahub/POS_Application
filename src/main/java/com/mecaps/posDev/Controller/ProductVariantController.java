@@ -3,7 +3,6 @@ package com.mecaps.posDev.Controller;
 import com.mecaps.posDev.Request.ProductVariantRequest;
 import com.mecaps.posDev.Response.ProductVariantResponse;
 import com.mecaps.posDev.Service.ProductVariantService;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,62 +11,57 @@ import java.util.List;
 @RestController
 @RequestMapping("/productVariant")
 public class ProductVariantController {
-final ProductVariantService productVariantService;
+    final ProductVariantService productVariantService;
 
     public ProductVariantController(ProductVariantService productVariantService) {
         this.productVariantService = productVariantService;  // correct the parameter of constructor
     }
 
 
-               // FOR CREATE //
-
-            @PostMapping("/createProductVariant")
-            public ProductVariantResponse createProductVariant(@RequestBody ProductVariantRequest productVariantRequest){
-            return productVariantService.CreateProductVariant( productVariantRequest);
-}
-
-
-                // FOR GET //
-
-            @GetMapping("/getProductVariant")
-            public List<ProductVariantResponse> getAll(){
-            return productVariantService.getAll();
-            }
+    // FOR CREATE
+    @PostMapping("/createProductVariant")
+    public ProductVariantResponse createProductVariant(@RequestBody ProductVariantRequest productVariantRequest) {
+        return productVariantService.CreateProductVariant(productVariantRequest);
+    }
 
 
-                // FOR UPDATE //
+    // FOR GET
+    @GetMapping("/getProductVariant")
+    public List<ProductVariantResponse> getAll() {
+        return productVariantService.getAll();
+    }
 
-            @PutMapping("/updateProductVariant/{id}")
-            public ProductVariantResponse updateProductVariant(@PathVariable Long id,@RequestBody ProductVariantRequest productVariantRequest){
-            return  productVariantService.updateProductVariant(id,productVariantRequest);
-            }
+
+    // FOR UPDATE
+    @PutMapping("/updateProductVariant/{id}")
+    public ProductVariantResponse updateProductVariant(@PathVariable Long id, @RequestBody ProductVariantRequest productVariantRequest) {
+        return productVariantService.updateProductVariant(id, productVariantRequest);
+    }
 
 
-                // FOR DELETE //
+    // FOR DELETE
+    @DeleteMapping("/deleteProductVariant/{id}")
+    public String deleteProductVariant(@PathVariable Long id) {
+        return productVariantService.deleteProductVariant(id);
+    }
 
-            @DeleteMapping("/deleteProductVariant/{id}")
-            public String deleteProductVariant(@PathVariable Long id){
-            return productVariantService.deleteProductVariant(id);
-            }
+    @GetMapping("/get/{id}")
+    public ProductVariantResponse getProductVariantById(@PathVariable Long id) {
+        return productVariantService.findProductVariantById(id);
+    }
 
-            @GetMapping("/get/{id}")
-            public ProductVariantResponse getProductVariantById(@PathVariable Long id){
-            return productVariantService.findProductVariantById(id);
-            }
+    @GetMapping("/paginated")
+    public List<ProductVariantResponse> getPaginatedProductVariants
+            (@RequestParam(defaultValue = "0") int page,
+             @RequestParam(defaultValue = "5") int size,
+             @RequestParam(defaultValue = "product_variant_price") String sortBy,
+             @RequestParam(defaultValue = "asc") String direction) {
+        return productVariantService.getPaginatedProductVariants(page, size, sortBy, direction);
+    }
 
-            @GetMapping("/paginated")
-            public List<ProductVariantResponse> getPaginatedProductVariants
-                    (@RequestParam(defaultValue = "0") int page,
-                     @RequestParam(defaultValue = "5") int size,
-                     @RequestParam(defaultValue = "product_variant_price")String sortBy,
-                     @RequestParam(defaultValue = "asc") String direction)
-            {
-              return productVariantService.getPaginatedProductVariants(page,size,sortBy,direction);
-            }
-
-            @GetMapping("/getProductVariantById/{id}")
-    public ResponseEntity<ProductVariantResponse> findProductVariantById(@PathVariable Long id){
+    @GetMapping("/getProductVariantById/{id}")
+    public ResponseEntity<ProductVariantResponse> findProductVariantById(@PathVariable Long id) {
         ProductVariantResponse productVariantResponse = productVariantService.findProductVariantById(id);
         return ResponseEntity.ok(productVariantResponse);
-            }
+    }
 }

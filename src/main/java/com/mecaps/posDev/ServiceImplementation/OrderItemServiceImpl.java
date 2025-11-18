@@ -18,6 +18,7 @@ import java.util.List;
 public class OrderItemServiceImpl implements OrderItemService {
     private final OrderItemRepository orderItemRepository;
 
+    @Override
     public void deleteOrderItem(Long orderItemId) {
         OrderItem orderItem = orderItemRepository.findById(orderItemId)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -27,7 +28,7 @@ public class OrderItemServiceImpl implements OrderItemService {
         orderItemRepository.delete(orderItem);
     }
 
-
+   @Override
     public List<OrderItemResponse> getOrderItemsByOrder(Long orderId) {
         List<OrderItem> orderItems = orderItemRepository.findByOrder_orderId(orderId);
 
