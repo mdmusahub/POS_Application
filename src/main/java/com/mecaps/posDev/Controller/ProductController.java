@@ -42,7 +42,7 @@ public class ProductController
         }
 
     @GetMapping("/paginatedProduct")
-    public Page<ProductResponse> getPaginatedProduct(
+    public List<ProductResponse> getPaginatedProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "min") String sortType) {
