@@ -37,7 +37,7 @@ public class ReturnOrderItem
     @ManyToOne
     private OrderItem orderItemId;
 
-    @ManyToOne
+    @OneToOne
     private Order orderId;
 
 

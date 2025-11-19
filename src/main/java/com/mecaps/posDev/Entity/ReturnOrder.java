@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class ReturnOrder {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long return_order_id;
 
     @Column(nullable = false)
@@ -25,7 +25,7 @@ public class ReturnOrder {
     @Column(nullable = false)
     private Long return_quantity;
 
-    @ManyToOne
+    @OneToOne
     private Order order;
 
     @ManyToOne

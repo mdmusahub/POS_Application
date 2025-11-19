@@ -1,6 +1,7 @@
 package com.mecaps.posDev.ServiceImplementation;
 
 import com.mecaps.posDev.Entity.*;
+import com.mecaps.posDev.Enums.ReturnStatus;
 import com.mecaps.posDev.Exception.ResourceNotFoundException;
 import com.mecaps.posDev.Repository.*;
 import com.mecaps.posDev.Request.ReturnOrderItemRequest;
@@ -67,7 +68,7 @@ public class ReturnServiceImplementation implements ReturnService {
 
             // refund calculation
             double unitPrice = orderItem.getUnit_price();
-            double refundAmount = unitPrice * itemReq.getReturn_quantity();
+            double refundAmount = 0d;
 
             // create ReturnOrderItem
             ReturnOrderItem returnItem = new ReturnOrderItem();
@@ -77,9 +78,18 @@ public class ReturnServiceImplementation implements ReturnService {
             returnItem.setProductVariantId(variant);
             returnItem.setUnitPrice(unitPrice);
             returnItem.setReturnQuantity(itemReq.getReturn_quantity());
-            returnItem.setRefundAmount(refundAmount);
             returnItem.setReturnReason(itemReq.getReturn_reason());
             returnItem.setReturnStatus(itemReq.getReturn_status());
+
+            //condition if REPLACED then do not refund money
+            if(itemReq.getReturn_status() == ReturnStatus.REFUNDED) {
+                refundAmount = unitPrice * itemReq.getReturn_quantity();
+                returnItem.setRefundAmount(refundAmount);
+            }
+
+            else {
+                returnItem.setRefundAmount(0d);
+            }
 
             returnOrderItems.add(returnItem);
 
