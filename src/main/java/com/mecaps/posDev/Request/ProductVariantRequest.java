@@ -11,6 +11,6 @@ public class ProductVariantRequest {
     private Double product_variant_price;
     private Boolean refundable;
     private String product_variant_value;
-    private Long productVariant;
+    private Long product_variant;
     private ProductInventoryRequest productInventoryRequest;
 }

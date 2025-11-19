@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/productFull")
 public class ProductFullController {
 
-private final ProductFullService productFullService;
+    private final ProductFullService productFullService;
 
     public ProductFullController(ProductFullService productFullService) {
         this.productFullService = productFullService;
@@ -20,8 +20,8 @@ private final ProductFullService productFullService;
 
 
     @PostMapping("/createFullProduct")
-    public ResponseEntity<String> createProductFull(@RequestBody ProductFullRequest productFullRequest){
-       String response = productFullService.createProductFull(productFullRequest);
+    public ResponseEntity<String> createProductFull(@RequestBody ProductFullRequest productFullRequest) {
+        String response = productFullService.createProductFull(productFullRequest);
         return ResponseEntity.ok(response);
 
     }

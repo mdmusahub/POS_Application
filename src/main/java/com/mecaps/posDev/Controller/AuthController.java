@@ -17,9 +17,9 @@ import java.util.Map;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final JwtService jwtService ;
-    private final UserRepository userRepository ;
-    private final PasswordEncoder passwordEncoder ;
+    private final JwtService jwtService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public AuthController(JwtService jwtService, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.jwtService = jwtService;
@@ -28,19 +28,19 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Map<String,String> login(@RequestBody AuthDTO request){
-    User user= userRepository.findByemail(request.getEmail())
-            .orElseThrow(()->new RuntimeException("User not found " + request.getEmail())) ;
+    public Map<String, String> login(@RequestBody AuthDTO request) {
+        User user = userRepository.findByemail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found " + request.getEmail()));
 
-    if(!passwordEncoder.matches(request.getPassword(),user.getPassword())){
-        throw new RuntimeException("Invalid Credential");
-    }
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid Credential");
+        }
 
-    String token = jwtService.generateAccessToken(user.getEmail(), user.getRole());
+        String token = jwtService.generateAccessToken(user.getEmail(), user.getRole());
 
-    Map<String,String> map=new HashMap<>();
-    map.put("Token :" , token);
-    return map ;
+        Map<String, String> map = new HashMap<>();
+        map.put("Token :", token);
+        return map;
 
     }
 }

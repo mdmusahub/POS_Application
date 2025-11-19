@@ -3,9 +3,7 @@ package com.mecaps.posDev.ServiceImplementation;
 import com.mecaps.posDev.Entity.*;
 import com.mecaps.posDev.Enums.PaymentMode;
 import com.mecaps.posDev.Enums.WaiverMode;
-import com.mecaps.posDev.Exception.OutOfStockException;
-import com.mecaps.posDev.Exception.ProductNotFoundException;
-import com.mecaps.posDev.Exception.ProductVariantNotFoundException;
+import com.mecaps.posDev.Exception.*;
 import com.mecaps.posDev.Repository.*;
 import com.mecaps.posDev.Request.OrderItemRequest;
 import com.mecaps.posDev.Request.OrderRequest;
@@ -15,6 +13,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,7 @@ public class OrderServiceImpl implements OrderService {
 
     // create order
     @Transactional
+    @Override
     public OrderResponse createOrder(OrderRequest orderRequest) {
         Customer customer = customerRepository.findByPhoneNumber(orderRequest.getUser_phone_number()).
                 orElseGet(() -> {
@@ -96,21 +98,47 @@ public class OrderServiceImpl implements OrderService {
                     });
 
             // set total base price in this variable so later we use in tax calculation
-            double baseTotalPrice = productVariant.getProduct_variant_price() * itemRequest.getQuantity();
+            double baseTotalPrice = productVariant.getProductVariantPrice() * itemRequest.getQuantity();
             double discountedPrice = baseTotalPrice;
+
             // Here we set Product level discount
-            Discount discount = discountRepository.findByproductVariant_productVariantId(productVariant.getProductVariantId())
+            Discount discount = discountRepository
+                    .findByproductVariant_productVariantId(productVariant.getProductVariantId())
                     .orElse(null);
+
             if (discount != null) {
+
+                // Condition 1: Must be active
+                if (!discount.getIs_active()) {
+                    continue;
+                }
+
+                // Condition 2: Must be within start & end date
+                LocalDateTime now = LocalDateTime.now();
+                if (discount.getStart_date_time().isAfter(now) ||
+                        discount.getEnd_date_time().isBefore(now)) {
+                    continue;
+                }
+
+                // Condition 3: Must have valid value
+                if (discount.getDiscount_value() == null || discount.getDiscount_value() <= 0) {
+                    continue;
+                }
+
                 double discountAmount = 0.0;
+
                 if (discount.getWaiver_mode() == WaiverMode.PERCENTAGE) {
                     discountAmount = discountedPrice * discount.getDiscount_value() / 100;
+
                 } else if (discount.getWaiver_mode() == WaiverMode.FLAT_AMOUNT) {
                     discountAmount = discount.getDiscount_value() * itemRequest.getQuantity();
                 }
+
                 discountedPrice -= discountAmount;
+
                 order.setDiscount(order.getDiscount() + discountAmount);
             }
+
 
             //  Price & GST Calculations
             double gstRate = gstTax.getGst_rate();
@@ -133,17 +161,17 @@ public class OrderServiceImpl implements OrderService {
             orderItem.setQuantity(itemRequest.getQuantity());
 
             // Set unit price and calculated amounts
-            orderItem.setUnit_price(productVariant.getProduct_variant_price());
+            orderItem.setUnit_price(round(productVariant.getProductVariantPrice()));
 
             // Store GST details in OrderItem
             orderItem.setGstRate(gstRate);
-            orderItem.setGstAmount(gstAmount);
-            orderItem.setC_gstAmount(cGstAmount);
-            orderItem.setS_gstAmount(sGstAmount);
+            orderItem.setGstAmount(round(gstAmount));
+            orderItem.setC_gstAmount(round(cGstAmount));
+            orderItem.setS_gstAmount(round(sGstAmount));
             orderItem.setGstTax(gstTax);
 
             // Final total (discounted + GST)
-            orderItem.setTotal_price(discountedPrice + gstAmount);
+            orderItem.setTotal_price(round(discountedPrice + gstAmount));
 
 
             subtotalBeforeTax += discountedPrice; // here we store total base price so later we calculate discount on order level discount
@@ -164,13 +192,25 @@ public class OrderServiceImpl implements OrderService {
         }
 
         if (orderLevelDiscount > 0) {
-            order.setDiscount(order.getDiscount() + orderLevelDiscount);
+            order.setDiscount(round(order.getDiscount() + orderLevelDiscount));
             subtotalBeforeTax -= orderLevelDiscount;
         }
 
-        order.setTax(totalTaxAmount);
-        order.setTotal_amount(subtotalBeforeTax + totalTaxAmount); // here we set total order price after checking order level discount is present or not
-        Order save =  orderRepository.save(order);
+        double calculatedOrderTotal = round(totalTaxAmount + subtotalBeforeTax);
+        order.setTax(round(totalTaxAmount));
+        order.setTotal_amount(calculatedOrderTotal);
+
+        // here we check total amount or payment amount is equal to Total amount before saving
+        double paidAmount = Double.parseDouble(order.getOnline_amount()) + Double.parseDouble(order.getCash_amount());
+        if(paidAmount > calculatedOrderTotal){
+            throw new OrderPaymentException("Payment is less than total amount" + paidAmount + " Required " + calculatedOrderTotal);
+        }
+        if(paidAmount < calculatedOrderTotal){
+            throw new OrderPaymentException("Payment exceeds total amount" + paidAmount + " Required " + calculatedOrderTotal);
+        }
+
+        order.setTotal_amount(round(paidAmount));
+        Order save = orderRepository.save(order);
 
         // managing inventory
         for (OrderItem orderItem : orderItemList) {
@@ -182,77 +222,61 @@ public class OrderServiceImpl implements OrderService {
             productInventoryRepository.save(productInventory);
         }
 
-//      Send confirmation email
+        //Send confirmation email
         String to = order.getUser_email();
         String subject = "Order Confirmed - #" + order.getOrderId();
-        StringBuilder body = new StringBuilder();
-        body.append("Hello.\n\n");
-        body.append("Your order has been confirmed successfully!\n\n");
-        body.append("Order Details:\n");
-        body.append("Order ID: ").append(order.getOrderId()).append("\n");
-        body.append("Total Amount: ₹").append(order.getTotal_amount()).append("\n");
-        body.append("Payment Mode: ").append(order.getPayment_mode()).append("\n");
-        body.append("Status: ").append(order.getOrder_status()).append("\n\n");
-        body.append("Thank you for shopping with us!\n");
-        body.append("POS System Team");
+
+        // Build HTML email
+        String htmlContent = emailService.buildOrderConfirmationHtml(order);
 
         if (to != null && !to.isEmpty()) {
             try {
-                emailService.sendEmail(to, subject, body.toString());
-                System.out.println("Order confirmation email sent to " + to);
+                emailService.sendHtmlEmail(to, subject, htmlContent);
+                System.out.println("HTML order confirmation email sent to " + to);
             } catch (Exception e) {
-                System.err.println("Failed to send confirmation email: " + e.getMessage());
+                System.err.println("Failed to send HTML email: " + e.getMessage());
             }
-        } else {
-            System.out.println("No email found for this customer. Skipping email notification.");
         }
 
         return new OrderResponse(save);
     }
 
 
-
-    public List<OrderResponse> getAll() {
-        List<Order> all = orderRepository.findAll();
-        return all.stream().map(OrderResponse::new).toList();
-    }
-
-    public OrderResponse getById(Long orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("invalid order ID"));
-        return new OrderResponse(order);
-    }
-
-    public String deleteOrder(Long order_id) {
-        Order order = orderRepository.findById(order_id).orElseThrow(() -> new RuntimeException("Order not found"));
-        orderRepository.delete(order);
-        return "order deleted successfully";
-    }
+    // order update method
     @Transactional
+    @Override
     public OrderResponse updateOrder(Long id, OrderRequest orderRequest) {
-        Order order = orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found with ID : " + id));
+        Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFound("Order not found with ID : " + id));
 
-        order.setPayment_mode(orderRequest.getPaymentMode());
-        order.setCash_amount(orderRequest.getCash_amount());
-        order.setOnline_amount(orderRequest.getOnline_amount());
+        Customer customer = customerRepository.findByPhoneNumber(orderRequest.getUser_phone_number())
+                .orElseGet(() -> {
+                    Customer customer1 = new Customer();
+                    customer1.setPhoneNumber(orderRequest.getUser_phone_number());
+                    customer1.setEmail(orderRequest.getUser_email());
+                    return customerRepository.save(customer1);
+                });
+
+        order.setCustomer(customer);
         order.setOrder_status(orderRequest.getOrder_status());
         order.setUser_phone_number(orderRequest.getUser_phone_number());
         order.setUser_email(orderRequest.getUser_email());
-
-
-        Customer customer = customerRepository.findByPhoneNumber(orderRequest.getUser_phone_number()).orElseGet(() -> {
-            Customer customer1 = new Customer();
-            customer1.setPhoneNumber(orderRequest.getUser_phone_number());
-            customer1.setEmail(orderRequest.getUser_email());
-            return customerRepository.save(customer1);
-        });
-        order.setCustomer(customer);
-
+        order.setPayment_mode(orderRequest.getPaymentMode());
+        if(orderRequest.getPaymentMode() == PaymentMode.CASH){
+            order.setCash_amount(order.getCash_amount() != null ? orderRequest.getCash_amount() : "0.0");
+            order.setOnline_amount("0.0");
+        } else if(orderRequest.getPaymentMode() == PaymentMode.UPI){
+            order.setOnline_amount(order.getOnline_amount() != null ? order.getOnline_amount() : "0.0");
+            order.setCash_amount("0.0");
+        } else if(orderRequest.getPaymentMode() == PaymentMode.MIXED){
+            order.setOnline_amount(order.getOnline_amount() != null ? order.getOnline_amount() : "0.0");
+            order.setCash_amount(order.getCash_amount() != null ? order.getCash_amount() : "0.0");
+        }
 
         for (OrderItem orderItem : order.getOrder_items()) {
             ProductVariant productVariant = orderItem.getProductVariant();
             ProductInventory productInventory = productInventoryRepository.findByproductVariant(productVariant)
-                    .orElseThrow(() -> new
-                            ProductNotFoundException("Inventory not found for this Variant : " + productVariant.getProductVariantId()));
+                    .orElseThrow(() ->
+                            new ProductVariantNotFoundException("this Variant is not found in inventory: " + productVariant.getProductVariantId()));
             productInventory.setQuantity(productInventory.getQuantity() + orderItem.getQuantity());
             productInventoryRepository.save(productInventory);
 
@@ -284,11 +308,12 @@ public class OrderServiceImpl implements OrderService {
                 }
                 throw new RuntimeException("no gst defined");
             });
-// again we set total base price in this variable so later we use in tax calculation
-            double baseTotalPrice = productVariant.getProduct_variant_price() * orderItemRequest.getQuantity();
+
+            // we set total base price in this variable so later we use in tax calculation
+            double baseTotalPrice = productVariant.getProductVariantPrice() * orderItemRequest.getQuantity();
             double discountedPrice = baseTotalPrice;
 
-// Here we set Product level discount again
+            // Here we set Product level discount again
             Discount discount = discountRepository.findByproductVariant_productVariantId(productVariant.getProductVariantId()).orElse(null);
             if (discount != null) {
                 double discountAmount = 0.0;
@@ -297,11 +322,11 @@ public class OrderServiceImpl implements OrderService {
                 } else if (discount.getWaiver_mode() == WaiverMode.FLAT_AMOUNT) {
                     discountAmount = discount.getDiscount_value() * orderItemRequest.getQuantity();
                 }
-                discountedPrice = discountedPrice - discountAmount;
-                totalDiscount = totalDiscount + discountAmount;
+                discountedPrice -= discountAmount;
+                totalDiscount +=  discountAmount;
             }
 
-//  Price & GST Calculations
+            //  Price & GST Calculations
             double gstRate = gstTax.getGst_rate();
             double gstAmount = (discountedPrice * gstRate) / 100;
             double cGstAmount = gstAmount / 2;
@@ -313,15 +338,15 @@ public class OrderServiceImpl implements OrderService {
             orderItem.setProductVariant(productVariant);
             orderItem.setQuantity(orderItemRequest.getQuantity());
 
-//here we check inventory
+            //here we check inventory
             ProductInventory productInventory =
                     productInventoryRepository.findByproductVariant(productVariant).orElseThrow(() -> new ProductVariantNotFoundException("Product Variant Vot Found"));
             if (productInventory.getQuantity() < orderItemRequest.getQuantity()) {
                 throw new OutOfStockException("Requested " + orderItemRequest.getQuantity() + " but only " + productInventory.getQuantity() + " available.");
             }
 
-// Set unit price and calculated amounts
-            orderItem.setUnit_price(productVariant.getProduct_variant_price());
+            // Set unit price and calculated amounts
+            orderItem.setUnit_price(productVariant.getProductVariantPrice());
 
             // Store GST details in OrderItem
             orderItem.setGstRate(gstRate);
@@ -330,8 +355,8 @@ public class OrderServiceImpl implements OrderService {
             orderItem.setS_gstAmount(sGstAmount);
             orderItem.setGstTax(gstTax);
 
-// Final total (discounted + GST)
-            orderItem.setTotal_price(discountedPrice + gstAmount);
+            // Final total (discounted + GST)
+            orderItem.setTotal_price(round(discountedPrice + gstAmount));
 
             subtotalBeforeTax += discountedPrice;// here we store total base price so later we calculate discount on order level discount
             totalTaxAmount += gstAmount;// here we store total tax amount so later we can set this tax value in order entity
@@ -340,31 +365,54 @@ public class OrderServiceImpl implements OrderService {
 
             productInventory.setQuantity(productInventory.getQuantity() - orderItemRequest.getQuantity());
             productInventoryRepository.save(productInventory);
-
-// here we are checking order level discount is present or not before set total price in order
-            double orderLevelDiscount = 0.0;
-            if (subtotalBeforeTax >= 1000 && subtotalBeforeTax < 2000) {
-                orderLevelDiscount = subtotalBeforeTax * 0.05d; //  setting 5% discount if total amount is >= 1000 && < 2000
-            } else if (subtotalBeforeTax >= 2000 && subtotalBeforeTax < 5000) {
-                orderLevelDiscount = subtotalBeforeTax * 0.10d; //  setting 10% discount if total amount is >= 2000 && < 5000
-            } else if (subtotalBeforeTax >= 5000) {
-                orderLevelDiscount = subtotalBeforeTax * 0.15d;  // setting 15% discount if total amount is >= 5000
-            }
-
-            if (orderLevelDiscount > 0) {
-                order.setDiscount(order.getDiscount() + orderLevelDiscount);
-                subtotalBeforeTax -= orderLevelDiscount;
-            }
-
-            order.setDiscount(totalDiscount);
-            order.setTax(totalTaxAmount);
-            order.setTotal_amount(subtotalBeforeTax + totalTaxAmount); // here we set total order price after checking order level discount is present or not
-            order.setOrder_items(newOrderItem);
-            Order order1 = orderRepository.save(order);
-
-
         }
-      return new OrderResponse(order);
+        // here we are checking order level discount is present or not before set total price in order
+        double orderLevelDiscount = 0.0;
+        if (subtotalBeforeTax >= 1000 && subtotalBeforeTax < 2000) {
+            orderLevelDiscount = subtotalBeforeTax * 0.02d; //  setting 4% discount if total amount is >= 1000 && < 2000
+        } else if (subtotalBeforeTax >= 2000 && subtotalBeforeTax < 5000) {
+            orderLevelDiscount = subtotalBeforeTax * 0.4d; //  setting 4% discount if total amount is >= 2000 && < 5000
+        } else if (subtotalBeforeTax >= 5000) {
+            orderLevelDiscount = subtotalBeforeTax * 0.06d;  // setting 6% discount if total amount is >= 5000
+        }
+
+        if (orderLevelDiscount > 0) {
+            order.setDiscount(order.getDiscount() + orderLevelDiscount);
+            subtotalBeforeTax -= orderLevelDiscount;
+        }
+
+        order.setDiscount(totalDiscount);
+        order.setTax(totalTaxAmount);
+        order.setTotal_amount(subtotalBeforeTax + totalTaxAmount); // here we set total order price after checking order level discount is present or not
+        order.setOrder_items(newOrderItem);
+        Order order1 = orderRepository.save(order);
+        return new OrderResponse(order1);
     }
 
+    @Override
+    public List<OrderResponse> getAll() {
+        List<Order> all = orderRepository.findAll();
+        return all.stream().map(OrderResponse::new).toList();
     }
+
+    @Override
+    public OrderResponse getById(Long orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("invalid order ID"));
+        return new OrderResponse(order);
+    }
+
+    @Override
+    public String deleteOrder(Long order_id) {
+        Order order = orderRepository.findById(order_id).orElseThrow(() -> new RuntimeException("Order not found"));
+        orderRepository.delete(order);
+        return "order deleted successfully";
+    }
+
+    private double round(double value) {
+        return new BigDecimal(value)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
+    }
+
+
+}

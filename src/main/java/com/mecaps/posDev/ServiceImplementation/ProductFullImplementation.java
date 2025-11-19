@@ -4,6 +4,7 @@ import com.mecaps.posDev.Entity.Category;
 import com.mecaps.posDev.Entity.Product;
 import com.mecaps.posDev.Entity.ProductInventory;
 import com.mecaps.posDev.Entity.ProductVariant;
+import com.mecaps.posDev.Exception.CategoryNotFoundException;
 import com.mecaps.posDev.Repository.CategoryRepository;
 import com.mecaps.posDev.Repository.ProductInventoryRepository;
 import com.mecaps.posDev.Repository.ProductRepository;
@@ -34,30 +35,32 @@ public class ProductFullImplementation implements ProductFullService {
         this.productVariantRepository = productVariantRepository;
         this.productInventoryRepository = productInventoryRepository;
     }
-@Transactional
+    @Transactional
+    @Override
     public String createProductFull(ProductFullRequest productFullRequest){
 
 
-    Category category = categoryRepository.findById(productFullRequest.getCategory_id()).orElseThrow(()->new RuntimeException("Id Not Found"));
+    Category category = categoryRepository.findById(productFullRequest.getCategory_id()).orElseThrow(()->
+            new CategoryNotFoundException("category Not Found" + productFullRequest.getCategory_id()));
 
 
-// creating Product
-Product product = new Product();
-product.setProductName(productFullRequest.getProduct_name());
-product.setProduct_description(productFullRequest.getProduct_description());
-product.setSku(productFullRequest.getSku());
-product.setCategoryId(category);
+    // creating Product
+    Product product = new Product();
+    product.setProductName(productFullRequest.getProduct_name());
+    product.setProduct_description(productFullRequest.getProduct_description());
+    product.setSku(productFullRequest.getSku());
+    product.setCategoryId(category);
     Product save1 = productRepository.save(product);
 
-if(productFullRequest.getProductVariantRequests()!= null && !productFullRequest.getProductVariantRequests().isEmpty()) {
-    for (ProductVariantRequest request : productFullRequest.getProductVariantRequests()) {
+    if(productFullRequest.getProductVariantRequests()!= null && !productFullRequest.getProductVariantRequests().isEmpty()) {
+        for (ProductVariantRequest request : productFullRequest.getProductVariantRequests()) {
 
-// Creating ProductVariant
+        // Creating ProductVariant
         ProductVariant productVariant = new ProductVariant();
         productVariant.setVariantName(request.getProduct_variant_name());
-        productVariant.setProduct_variant_value(request.getProduct_variant_value());
+        productVariant.setProductVariantValue(request.getProduct_variant_value());
         productVariant.setRefundable(request.getRefundable());
-        productVariant.setProduct_variant_price(request.getProduct_variant_price());
+        productVariant.setProductVariantPrice(request.getProduct_variant_price());
         productVariant.setProductId(save1);
 
         ProductVariant save2 = productVariantRepository.save(productVariant);
@@ -65,17 +68,14 @@ if(productFullRequest.getProductVariantRequests()!= null && !productFullRequest.
         if(request.getProductInventoryRequest()!=null){
             ProductInventoryRequest productInventoryRequest = request.getProductInventoryRequest();
 
-// Creating ProductInventory
+           // Creating ProductInventory
             ProductInventory productInventory = new ProductInventory();
-
             productInventory.setLocation(productInventoryRequest.getLocation());
             productInventory.setQuantity(productInventoryRequest.getQuantity());
             productInventory.setProductVariant(save2);
             productInventory.setProductId(save1);
             ProductInventory save3 = productInventoryRepository.save(productInventory);
-
         }
-
     }
 }
 return "Created Successfully";

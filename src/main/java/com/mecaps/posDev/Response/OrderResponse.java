@@ -1,7 +1,7 @@
 package com.mecaps.posDev.Response;
 
-import com.mecaps.posDev.Entity.Order;
 import com.mecaps.posDev.Entity.Customer;
+import com.mecaps.posDev.Entity.Order;
 import com.mecaps.posDev.Enums.OrderStatus;
 import com.mecaps.posDev.Enums.PaymentMode;
 import lombok.Getter;
@@ -26,17 +26,13 @@ public class OrderResponse {
     private Double tax;
     private Double total_amount;
     private String user_phone_number;
-
-
     private String customer_email;
     private String customer_phone;
-
-
-
     private LocalDateTime order_date;
 
     //  Default constructor
-    public OrderResponse() {}
+    public OrderResponse() {
+    }
 
     // Constructor that takes Order entity and auto-fills data
     public OrderResponse(Order order) {

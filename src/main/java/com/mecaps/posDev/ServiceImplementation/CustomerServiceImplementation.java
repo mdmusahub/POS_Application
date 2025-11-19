@@ -21,6 +21,7 @@ public class CustomerServiceImplementation implements CustomerService {
         this.customerRepository = customerRepository;
     }
 
+    @Override
     public String createCustomer(CustomerRequest customerRequest){
         customerRepository.findByPhoneNumber(customerRequest.getPhoneNumber())
         .ifPresent(present->{throw new CustomerAlreadyExist("This customer is already exist " + customerRequest.getPhoneNumber());});
@@ -32,7 +33,7 @@ public class CustomerServiceImplementation implements CustomerService {
 
     }
 
-
+    @Override
     public String updateCustomer(long id , CustomerRequest customerRequest){
         Customer customer = customerRepository.findById(id).orElseThrow(()->new CustomerNotFound("This customer is not found " + id)) ;
         customer.setEmail(customerRequest.getEmail());
@@ -43,22 +44,23 @@ public class CustomerServiceImplementation implements CustomerService {
 
     }
 
+    @Override
      public List<CustomerResponse> getAll(){
-      List<Customer> customerList=customerRepository.findAll();
-      return customerList.stream().map(CustomerResponse::new).toList() ;
-
+        List<Customer> customerList = customerRepository.findAll();
+        return customerList.stream().map(CustomerResponse::new).toList();
      }
 
-     public String deleteCustomer(long id ){
-     Customer customer = customerRepository.findById(id).orElseThrow(()->new CustomerNotFound("This customer is not found " + id)) ;
-     customerRepository.delete(customer);
-     return "This customer is successfully deleted" ;
+    @Override
+    public String deleteCustomer(long id) {
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new CustomerNotFound("This customer is not found " + id));
+        customerRepository.delete(customer);
+        return "This customer is successfully deleted";
+    }
 
-   }
+    @Override
+    public CustomerResponse getById(long id) {
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new CustomerNotFound("This customer is not found " + id));
+        return new CustomerResponse(customer);
+    }
 
-   public CustomerResponse getById(long id){
-   Customer customer = customerRepository.findById(id).orElseThrow(()->new CustomerNotFound("This customer is not found " + id)) ;
-   return new CustomerResponse(customer) ;
-   }
-
-   }
+}

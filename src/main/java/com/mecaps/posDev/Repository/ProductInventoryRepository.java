@@ -11,4 +11,5 @@ import java.util.Optional;
 @Repository
 public interface ProductInventoryRepository extends JpaRepository<ProductInventory ,Long> {
     Optional<ProductInventory> findByproductVariant(ProductVariant variant) ;
+
 }

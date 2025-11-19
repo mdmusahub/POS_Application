@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface OrderItemService {
     void deleteOrderItem(Long orderItemId);
+
     List<OrderItemResponse> getOrderItemsByOrder(Long orderId);
 }

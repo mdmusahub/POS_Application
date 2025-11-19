@@ -12,14 +12,16 @@ import com.mecaps.posDev.Repository.ProductInventoryRepository;
 import com.mecaps.posDev.Repository.ProductRepository;
 import com.mecaps.posDev.Repository.ProductVariantRepository;
 import com.mecaps.posDev.Request.ProductRequest;
-import com.mecaps.posDev.Request.ProductVariantRequest;
 import com.mecaps.posDev.Response.FullResponse;
 import com.mecaps.posDev.Response.ProductResponse;
-import com.mecaps.posDev.Response.ProductVariantResponse;
 import com.mecaps.posDev.Response.ViResponse;
 import com.mecaps.posDev.Service.ProductService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -27,7 +29,7 @@ public class ProductServiceImplementation implements ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
-    private final ProductVariantRepository productVariantRepository ;
+    private final ProductVariantRepository productVariantRepository;
     private final ProductInventoryRepository productInventoryRepository;
 
 
@@ -38,7 +40,7 @@ public class ProductServiceImplementation implements ProductService {
         this.productInventoryRepository = productInventoryRepository;
     }
 
-
+    @Override
     public ProductResponse createProduct(ProductRequest req) {
         productRepository.findByProductName(req.getProduct_name())
                 .ifPresent(present->{throw  new ProductAlreadyExist("This product is already found " + req.getProduct_name());
@@ -55,7 +57,7 @@ public class ProductServiceImplementation implements ProductService {
 
     }
 
-
+    @Override
     public Product deleteProduct(Long id) {
         Product deleteProduct = productRepository.findById(id).orElseThrow(()->new ProductNotFoundException("This product Id is not found " + id));
         productRepository.delete(deleteProduct);
@@ -63,7 +65,7 @@ public class ProductServiceImplementation implements ProductService {
     }
 
 
-
+    @Override
     public ProductResponse updateProduct(Long id,ProductRequest req) {
         Product updatePro = productRepository.findById(id).orElseThrow(()->new ProductNotFoundException("This product Id is not found " + id));
         Category category = categoryRepository.findById(req.getCategory_id())
@@ -75,27 +77,47 @@ public class ProductServiceImplementation implements ProductService {
         return new ProductResponse(save);
     }
 
-
+    @Override
     public List<ProductResponse> getProduct() {
         List<Product> getProduct = productRepository.findAll();
 
         return getProduct.stream().map(ProductResponse::new).toList();
     }
 
+    @Override
     public FullResponse getAllDetailThoughProductId(Long id) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("This product is not found"));
+        Product product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("This product is not found" + id));
         List<ProductVariant> productVariant = productVariantRepository.findByProductId_ProductId(product.getProductId());
         List<ViResponse> viResponseList = productVariant.stream().map(variant -> {
-            ProductInventory inventory = productInventoryRepository
-                    .findByproductVariant(variant)
+            ProductInventory inventory = productInventoryRepository.findByproductVariant(variant)
                     .orElse(null);
             return new ViResponse(variant, inventory);
         }).toList();
-
 
         FullResponse response = new FullResponse();
         response.setProductResponse(new ProductResponse(product));
         response.setViResponseList(viResponseList);
         return response;
-       }
+    }
+
+
+
+    @Override
+    public List<ProductResponse> getPaginatedProduct(int page, int size, String sortType) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Product> productPage;
+        if (sortType != null && sortType.toLowerCase().startsWith("max")) {
+            productPage = productRepository.findAllByMaxVariantPrice(pageable);
+        }
+        else if (sortType != null && sortType.toLowerCase().startsWith("min")) {
+            productPage = productRepository.findAllByMinVariantPrice(pageable);
+
+        }else {
+            productPage = productRepository.findAllByMinVariantPrice(pageable);
+            System.out.println(" Invalid sortType, defaulting to MIN variant price");        }
+
+        return productPage.getContent().stream().map(ProductResponse::new).collect(Collectors.toList());
+    }
 }
+

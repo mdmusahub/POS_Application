@@ -17,6 +17,8 @@ public class UserServiceImplementation implements UserService {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
+
+    @Override
     public String createUser(UserRequest userRequest){
         User user= new User();
         user.setEmail(userRequest.getEmail());
