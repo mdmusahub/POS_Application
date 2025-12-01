@@ -2,6 +2,7 @@ package com.mecaps.posDev.ServiceImplementation;
 
 import com.mecaps.posDev.Entity.User;
 import com.mecaps.posDev.Repository.UserRepository;
+import com.mecaps.posDev.Request.ChangePasswordDTO;
 import com.mecaps.posDev.Request.UserRequest;
 import com.mecaps.posDev.Service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,5 +39,24 @@ public class UserServiceImplementation implements UserService {
 
         userRepository.save(user);
         return "User is create successfully";
+    }
+
+
+
+    public  String setPassword(long id , ChangePasswordDTO request){
+
+        User user = userRepository.findById(id).orElseThrow(()->new RuntimeException("Uer not found"));
+
+        if(!passwordEncoder.matches(request.getOldPassword(),user.getPassword())) {
+            return "incorrect password" ;
+        }
+
+        if(!request.getNewPassword().equals(request.getConformPassword())){
+            return "New Password and Confirm Password must match!" ;
+        }
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        userRepository.save(user);
+        return "Change password";
     }
 }
