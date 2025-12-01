@@ -25,6 +25,8 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private PaymentMode payment_mode;
 
+    private String razorpayOrderId;
+
     private String cash_amount;
     private String online_amount;
 

@@ -7,25 +7,36 @@ import com.mecaps.posDev.Service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service implementation for managing user operations such as creating a new user.
+ */
 @Service
 public class UserServiceImplementation implements UserService {
-    private final UserRepository userRepository ;
-    private final PasswordEncoder passwordEncoder;
 
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserServiceImplementation(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * Creates a new user by saving the email, encoded password,
+     * and assigned role into the database.
+     *
+     * @param userRequest request containing user details
+     * @return success message after user creation
+     */
     @Override
-    public String createUser(UserRequest userRequest){
-        User user= new User();
+    public String createUser(UserRequest userRequest) {
+        User user = new User();
         user.setEmail(userRequest.getEmail());
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         user.setRole(userRequest.getRole());
-        userRepository.save(user) ;
-        return "User is create successfully" ;
-    }
+        user.setActive(userRequest.isActive());
 
+        userRepository.save(user);
+        return "User is create successfully";
+    }
 }

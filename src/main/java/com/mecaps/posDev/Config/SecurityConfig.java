@@ -24,14 +24,31 @@ public class SecurityConfig {
          return new BCryptPasswordEncoder();
     }
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)throws Exception{
-        httpSecurity.csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(auth-> auth
-        .requestMatchers("/auth/login").permitAll()
-         .requestMatchers("/userClass/createUser").permitAll()
-        .requestMatchers("/userClass/*").hasRole("ADMIN").anyRequest().authenticated());
-         httpSecurity.addFilterBefore(jwtFilter , UsernamePasswordAuthenticationFilter.class);
-         return httpSecurity.build() ;
 
+        httpSecurity.csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        // Public endpoints (NO JWT REQUIRED)
+                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/userClass/createUser").permitAll()
+
+                        //  MOST IMPORTANT — Allow payment endpoints
+                        .requestMatchers("/payment/**").permitAll()
+                        .requestMatchers("/api/payment/**").permitAll()
+                        .requestMatchers("/api/webhook/razorpay").permitAll()
+
+                        // Admin pages
+                        .requestMatchers("/userClass/*").hasRole("ADMIN")
+
+                        // Everything else needs JWT
+                        .anyRequest().authenticated()
+                );
+
+        httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return httpSecurity.build();
     }
+
 }

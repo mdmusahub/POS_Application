@@ -14,6 +14,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service implementation for managing GST (Goods & Services Tax) records.
+ * <p>
+ * Handles creating, updating, retrieving, and deleting GST tax information
+ * associated with product categories.
+ */
 @Service
 @RequiredArgsConstructor
 public class GstTaxServiceImpl implements GstTaxService {
@@ -21,6 +27,13 @@ public class GstTaxServiceImpl implements GstTaxService {
     private final GstTaxRepository gstTaxRepository;
     private final CategoryRepository categoryRepository;
 
+    /**
+     * Creates a new GST tax entry for a specific category.
+     *
+     * @param gstTaxRequest the request containing GST details
+     * @return success message after saving GST data
+     * @throws CategoryNotFoundException if the given category does not exist
+     */
     @Override
     public String createGstTax(GstTaxRequest gstTaxRequest) {
         Category category = categoryRepository.findById(gstTaxRequest.getCategory_id())
@@ -37,6 +50,12 @@ public class GstTaxServiceImpl implements GstTaxService {
         return "GST tax created successfully";
     }
 
+    /**
+     * Retrieves all GST tax records stored in the system.
+     *
+     * @return list of GST tax responses
+     * @throws RuntimeException if no GST records are found
+     */
     @Override
     public List<GstTaxResponse> getAllGstTax() {
         List<GstTax> gstTaxList = gstTaxRepository.findAll();
@@ -48,6 +67,13 @@ public class GstTaxServiceImpl implements GstTaxService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves a GST tax record by its ID.
+     *
+     * @param id the GST tax ID
+     * @return GST tax response for the given ID
+     * @throws RuntimeException if no GST record is found
+     */
     @Override
     public GstTaxResponse getGstTaxById(Long id) {
         GstTax gstTax = gstTaxRepository.findById(id)
@@ -55,6 +81,15 @@ public class GstTaxServiceImpl implements GstTaxService {
         return new GstTaxResponse(gstTax);
     }
 
+    /**
+     * Updates an existing GST tax entry.
+     *
+     * @param id            the ID of the GST record to update
+     * @param gstTaxRequest the updated GST data
+     * @return success message after updating
+     * @throws RuntimeException         if GST record is not found
+     * @throws CategoryNotFoundException if new category ID is invalid
+     */
     @Override
     public String updateGstTax(Long id, GstTaxRequest gstTaxRequest) {
         GstTax gstTax = gstTaxRepository.findById(id)
@@ -75,6 +110,13 @@ public class GstTaxServiceImpl implements GstTaxService {
         return "GST tax updated successfully";
     }
 
+    /**
+     * Deletes a GST tax record by ID.
+     *
+     * @param id the ID of the GST entry to delete
+     * @return success message after deletion
+     * @throws RuntimeException if the GST record does not exist
+     */
     @Override
     public String deleteGstTax(Long id) {
         GstTax gstTax = gstTaxRepository.findById(id)

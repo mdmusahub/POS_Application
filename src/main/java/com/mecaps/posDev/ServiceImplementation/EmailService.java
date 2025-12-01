@@ -1,25 +1,4 @@
-package com.mecaps.posDev.ServiceImplementation;//package com.mecaps.posDev.ServiceImplementation;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.mail.SimpleMailMessage;
-//import org.springframework.mail.javamail.JavaMailSender;
-//import org.springframework.stereotype.Service;
-//
-//@Service
-//public class EmailService {
-//    @Autowired
-//    private JavaMailSender mailSender;
-//
-//    public void sendEmail(String to, String subject, String text) {
-//        SimpleMailMessage message = new SimpleMailMessage();
-//        message.setTo(to);
-//        message.setSubject(subject);
-//        message.setText(text);
-//        mailSender.send(message);
-//        System.out.println("Email sent successfully to " + to);
-//    }
-//
-//}
-
+package com.mecaps.posDev.ServiceImplementation;
 
 import com.mecaps.posDev.Entity.Order;
 import jakarta.mail.internet.MimeMessage;
@@ -30,6 +9,10 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+/**
+ * Service responsible for sending emails and generating HTML templates,
+ * specifically for sending order confirmation mails using Thymeleaf.
+ */
 @Service
 public class EmailService {
 
@@ -39,6 +22,14 @@ public class EmailService {
     @Autowired
     private SpringTemplateEngine templateEngine;
 
+    /**
+     * Sends an HTML email to the specified recipient.
+     *
+     * @param to          receiver email address
+     * @param subject     email subject line
+     * @param htmlContent HTML content to be sent
+     * @throws RuntimeException if email sending fails
+     */
     public void sendHtmlEmail(String to, String subject, String htmlContent) {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -46,7 +37,7 @@ public class EmailService {
 
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(htmlContent, true); // true = HTML
+            helper.setText(htmlContent, true); // true = HTML email
 
             mailSender.send(mimeMessage);
         } catch (Exception e) {
@@ -54,6 +45,12 @@ public class EmailService {
         }
     }
 
+    /**
+     * Builds the HTML content for an order confirmation email using Thymeleaf.
+     *
+     * @param order the order whose details should appear in the email
+     * @return the processed HTML string generated from the Thymeleaf template
+     */
     public String buildOrderConfirmationHtml(Order order) {
         Context ctx = new Context();
 
@@ -66,7 +63,7 @@ public class EmailService {
         ctx.setVariable("cashAmount", order.getCash_amount());
         ctx.setVariable("onlineAmount", order.getOnline_amount());
 
-        // MOST IMPORTANT → Pass product list
+        // Pass item list to render in HTML template
         ctx.setVariable("items", order.getOrder_items());
 
         return templateEngine.process("email/order-confirmation", ctx);
