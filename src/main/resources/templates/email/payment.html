@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Razorpay Test</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+
+<h2>Razorpay Test Payment</h2>
+
+<button id="payBtn">Pay Now</button>
+
+<script>
+    // Step 1: When button clicked → call your backend to create Razorpay order
+    document.getElementById("payBtn").onclick = async function () {
+
+        const orderId = prompt("Enter your backend orderId to test:");
+
+        // Call backend create API
+        const response = await fetch("http://localhost:8081/payment/create/" + orderId, {
+            method: "POST"
+        });
+
+        const data = await response.json();
+        console.log("Backend Response:", data);
+
+        const razorpayOrderId = data.razorpayOrderId;
+        const amount = data.amount * 100; // Convert to paise
+        const currency = data.currency;
+
+        // Step 2: Open Razorpay popup
+        const options = {
+            "key": "rzp_test_RhWMW7oLV2WPx6",
+            "amount": amount,
+            "currency": currency,
+            "name": "Test Payment",
+            "description": "Razorpay Test Transaction",
+            "order_id": razorpayOrderId,
+
+            "handler": async function (response) {
+                // Step 3: Razorpay sends payment data here after successful payment
+                console.log("Payment Success:", response);
+
+                const verifyBody = {
+                    razorpayPaymentId: response.razorpay_payment_id,
+                    razorpayOrderId: response.razorpay_order_id,
+                    razorpaySignature: response.razorpay_signature,
+                    orderId: orderId
+                };
+
+                // Step 4: Call backend verify API
+                const verifyResponse = await fetch("http://localhost:8081/payment/verify", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(verifyBody)
+                });
+
+                const verifyResult = await verifyResponse.text();
+                alert("Verification Result: " + verifyResult);
+            },
+
+            "theme": {
+                "color": "#3399cc"
+            }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+    };
+</script>
+
+</body>
+</html>

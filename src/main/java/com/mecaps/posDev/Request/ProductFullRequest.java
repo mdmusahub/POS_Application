@@ -10,11 +10,8 @@ import java.util.List;
 public class ProductFullRequest {
 
     private Long category_id;
-
-
     private String product_name;
     private String product_description;
     private String sku;
-
-private List<ProductVariantRequest> productVariantRequests;
+    private List<ProductVariantRequest> productVariantRequests;
 }

@@ -14,6 +14,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service implementation for managing product discounts.
+ * Provides create, update, fetch, and delete operations for discounts.
+ */
 @Service
 @RequiredArgsConstructor
 public class DiscountServiceImpl implements DiscountService {
@@ -21,7 +25,13 @@ public class DiscountServiceImpl implements DiscountService {
     private final DiscountRepository discountRepository;
     private final ProductVariantRepository productVariantRepository;
 
-    // ✅ CREATE Discount
+    /**
+     * Creates a new discount for a specific product variant.
+     *
+     * @param discountRequest the discount details including value, mode, dates, and variant ID
+     * @return success message after creation
+     * @throws ResourceNotFoundException if the product variant does not exist
+     */
     @Override
     public String createDiscount(DiscountRequest discountRequest) {
         ProductVariant variant = productVariantRepository.findById(discountRequest.getProduct_variant())
@@ -40,7 +50,12 @@ public class DiscountServiceImpl implements DiscountService {
         return "Discount created successfully";
     }
 
-    // ✅ GET ALL Discounts
+    /**
+     * Retrieves all available discounts.
+     *
+     * @return list of DiscountResponse objects
+     * @throws ResourceNotFoundException if no discounts exist
+     */
     @Override
     public List<DiscountResponse> getAllDiscounts() {
         List<Discount> discounts = discountRepository.findAll();
@@ -54,7 +69,13 @@ public class DiscountServiceImpl implements DiscountService {
                 .collect(Collectors.toList());
     }
 
-    // ✅ GET Discount BY ID
+    /**
+     * Retrieves a discount by its ID.
+     *
+     * @param id discount ID
+     * @return DiscountResponse containing discount details
+     * @throws ResourceNotFoundException if the discount ID does not exist
+     */
     @Override
     public DiscountResponse getDiscountById(Long id) {
         Discount discount = discountRepository.findById(id)
@@ -63,7 +84,16 @@ public class DiscountServiceImpl implements DiscountService {
         return new DiscountResponse(discount);
     }
 
-    // ✅ UPDATE Discount
+    /**
+     * Updates an existing discount.
+     * <p>
+     * Supports updating discount value, dates, status, mode, and assigned variant.
+     *
+     * @param id              the ID of the discount to update
+     * @param discountRequest updated discount details
+     * @return success message after update
+     * @throws ResourceNotFoundException if discount or variant ID is invalid
+     */
     @Override
     public String updateDiscount(Long id, DiscountRequest discountRequest) {
         Discount discount = discountRepository.findById(id)
@@ -86,7 +116,13 @@ public class DiscountServiceImpl implements DiscountService {
         return "Discount updated successfully";
     }
 
-    // ✅ DELETE Discount
+    /**
+     * Deletes a discount by its ID.
+     *
+     * @param id the ID of the discount to delete
+     * @return success message after deletion
+     * @throws ResourceNotFoundException if the discount does not exist
+     */
     @Override
     public String deleteDiscount(Long id) {
         Discount discount = discountRepository.findById(id)

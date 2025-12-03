@@ -1,13 +1,15 @@
 package com.mecaps.posDev.Entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 public class ProductVariant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,21 +19,19 @@ public class ProductVariant {
     private String variantName;
 
     @Column(nullable = false)
-    private Double product_variant_price;
+    private Double productVariantPrice;
 
     @Column(nullable = false)
     private Boolean refundable;
 
     @Column(nullable = false)
-    private String product_variant_value;
-    
+    private String productVariantValue;
+
     @ManyToOne
-    @JoinColumn(name = "product_id")
+    private Product productId;
 
-    private Product product_id;
-
-    @OneToOne(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true)
-    private ProductInventory inventory;
+    @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductInventory> inventory = new ArrayList<>();
 
     @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();

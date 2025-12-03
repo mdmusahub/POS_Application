@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
-import com.mecaps.posDev.Entity.Order;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,8 +27,8 @@ public class Customer {
     @Column(nullable = false, unique = true)
     private String phoneNumber;
 
-    @OneToMany(mappedBy = "customer",  cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Order> orders =  new ArrayList<>();
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Order> orders = new ArrayList<>();
 
 
 }

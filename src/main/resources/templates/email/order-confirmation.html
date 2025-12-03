@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Confirmation</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            background: white;
+            margin: auto;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .header {
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 22px;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .content {
+            padding: 20px;
+            font-size: 16px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            color: gray;
+            font-size: 13px;
+        }
+
+        .details-box {
+            background: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .details-box p {
+            margin: 5px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        table th, table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background: #f2f2f2;
+            text-align: left;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .container {
+                padding: 10px !important;
+            }
+            .content {
+                padding: 10px !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <div class="header">
+        Order Confirmed
+    </div>
+
+    <div class="content">
+
+        <h2 style="font-size:20px; margin-top:0; color:#333; text-align:center;">
+            Welcome to a Seamless Shopping Experience!
+        </h2>
+
+        <p style="text-align:center; color:#555;">
+            Thank you for choosing us. Your order has been confirmed and is being processed with utmost care.
+        </p>
+
+        <p>Hello,</p>
+
+        <p>Your order has been <strong>successfully confirmed</strong>! Thank you for shopping with us.</p>
+
+        <div class="details-box">
+            <p><strong>Order ID:</strong> <span th:text="${orderId}"></span></p>
+            <p><strong>Total Amount:</strong> ₹<span th:text="${totalAmount}"></span></p>
+            <p><strong>Payment Mode:</strong> <span th:text="${paymentMode}"></span></p>
+            <p><strong>Status:</strong> <span th:text="${status}"></span></p>
+        </div>
+
+        <h3 style="color:#333;">Order Items</h3>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Product</th>
+                <th>Variant</th>
+                <th>Qty</th>
+                <th>Total</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="item : ${items}">
+                <td th:text="${item.product.productName}"></td>
+                <td th:text="${item.productVariant.variantName}"></td>
+                <td th:text="${item.quantity}"></td>
+                <td>₹<span th:text="${item.total_price}"></span></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div class="details-box">
+            <p><strong>Cash Paid:</strong> ₹<span th:text="${cashAmount}"></span></p>
+            <p><strong>Online Paid:</strong> ₹<span th:text="${onlineAmount}"></span></p>
+            <p><strong>Total Discount:</strong> ₹<span th:text="${discount}"></span></p>
+            <p><strong>Total Tax:</strong> ₹<span th:text="${tax}"></span></p>
+            <p><strong>Final Amount:</strong> ₹<span th:text="${totalAmount}"></span></p>
+        </div>
+
+        <p>We will continue to serve you with the best experience.</p>
+    </div>
+
+    <div class="footer">
+        POS System © 2025 — All Rights Reserved
+    </div>
+</div>
+</body>
+</html>

@@ -9,8 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/category")
-public class CategoryController
-{
+public class CategoryController {
 
     private final CategoryService categoryService;
 
@@ -19,23 +18,24 @@ public class CategoryController
     }
 
 
-      @PostMapping("/createCategory")
+    @PostMapping("/createCategory")
     public CategoryResponse createCategory(@RequestBody CategoryRequest req) {
-          return categoryService.createCategory(req);
-      }
+        return categoryService.createCategory(req);
+    }
 
     @GetMapping("/getCategory")
-    public List<CategoryResponse> getALlCategory(){
+    public List<CategoryResponse> getALlCategory() {
         return categoryService.getCategory();
 
     }
+
     @PutMapping("/updateCategory/{id}")
-    public CategoryResponse updateCategory(@PathVariable Long id,@RequestBody CategoryRequest req) {
+    public CategoryResponse updateCategory(@PathVariable Long id, @RequestBody CategoryRequest req) {
         return categoryService.updateCategory(id, req);
     }
 
     @DeleteMapping("/deleteCategory/{id}")
-    public String deleteCategory(@PathVariable Long id){
+    public String deleteCategory(@PathVariable Long id) {
         return categoryService.deleteCategory(id);
     }
 }

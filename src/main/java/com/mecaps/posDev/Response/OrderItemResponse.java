@@ -16,7 +16,8 @@ public class OrderItemResponse {
     private Double total_price;
     private Long order_id; // optional — to link with the parent order
 
-    public OrderItemResponse() {}
+    public OrderItemResponse() {
+    }
 
     //  Constructor that takes OrderItem entity directly
     public OrderItemResponse(OrderItem item) {
@@ -38,11 +39,11 @@ public class OrderItemResponse {
             this.product_name = item.getProduct().getProductName();
         }
 
-         try {
-                this.variant_name = item.getProductVariant().getVariantName();
-            } catch (Exception e) {
-                this.variant_name = null;
-            }
+        try {
+            this.variant_name = item.getProductVariant().getVariantName();
+        } catch (Exception e) {
+            this.variant_name = null;
         }
     }
+}
 

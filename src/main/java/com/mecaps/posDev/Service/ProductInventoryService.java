@@ -2,7 +2,6 @@ package com.mecaps.posDev.Service;
 
 import com.mecaps.posDev.Request.ProductInventoryRequest;
 import com.mecaps.posDev.Response.ProductInventoryResponse;
-import com.mecaps.posDev.ServiceImplementation.ProductInventoryServiceImplementation;
 
 import java.util.List;
 
@@ -12,7 +11,7 @@ public interface ProductInventoryService  {
 
     String updatedInventory(Long id,ProductInventoryRequest request);
 
-    List<ProductInventoryResponse> getAllProducts();
+    List<ProductInventoryResponse> getAllProductsInventory();
 
-    String deleteProduct(Long id);
+    String deleteProductInventory(Long id);
 }

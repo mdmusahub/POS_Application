@@ -1,6 +1,5 @@
 package com.mecaps.posDev.Controller;
 
-import com.mecaps.posDev.Entity.ProductInventory;
 import com.mecaps.posDev.Request.ProductInventoryRequest;
 import com.mecaps.posDev.Response.ProductInventoryResponse;
 import com.mecaps.posDev.Service.ProductInventoryService;
@@ -31,12 +30,12 @@ public class ProductInventoryController {
 
     @GetMapping("/getInventory")
     public List<ProductInventoryResponse> getAll(){
-        return productInventoryService.getAllProducts();
+        return productInventoryService.getAllProductsInventory();
     }
 
     @DeleteMapping("/deleteInventory/{id}")
     public String deleteInventory(@PathVariable Long id){
-        return  productInventoryService.deleteProduct(id);
+        return productInventoryService.deleteProductInventory(id);
     }
 
 
