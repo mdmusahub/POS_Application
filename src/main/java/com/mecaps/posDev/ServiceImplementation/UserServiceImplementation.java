@@ -51,7 +51,7 @@ public class UserServiceImplementation implements UserService {
             return "incorrect password" ;
         }
 
-        if(!request.getNewPassword().equals(request.getConformPassword())){
+        if(!request.getNewPassword().equals(request.getConfirmPassword())){
             return "New Password and Confirm Password must match!" ;
         }
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
