@@ -37,8 +37,6 @@ public class OrderServiceImpl implements OrderService {
     private final ReturnOrderItemRepository returnOrderItemRepository;
     private final OrderItemRepository orderItemRepository;
 
-
-
     /**
      * Creates a new order with full processing including:
      * <p>
@@ -295,12 +293,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new OrderNotFound("Order not found with ID : " + id));
 
         Customer customer = customerRepository.findByPhoneNumber(orderRequest.getUser_phone_number())
-                .orElseGet(() -> {
-                    Customer updateCustomer = new Customer();
-                    updateCustomer.setPhoneNumber(orderRequest.getUser_phone_number());
-                    updateCustomer.setEmail(orderRequest.getUser_email());
-                    return customerRepository.save(updateCustomer);
-                });
+                .orElseThrow(() -> new CustomerNotFound("Customer Not Found"));
 
         order.setCustomer(customer);
         order.setUser_phone_number(orderRequest.getUser_phone_number());
@@ -323,7 +316,6 @@ public class OrderServiceImpl implements OrderService {
         }
 
         for (OrderItem oldItem : order.getOrder_items()) {
-
             //  Restore inventory first
             ProductVariant variant = oldItem.getProductVariant();
             ProductInventory inventory = productInventoryRepository.findByproductVariant(variant)
@@ -336,7 +328,6 @@ public class OrderServiceImpl implements OrderService {
             boolean isUsedInReturn = returnOrderItemRepository.existsByOrderItemId(oldItem);
 
             if (isUsedInReturn) {
-
                 oldItem.setQuantity(0L);
                 oldItem.setTotal_price(0.0);
                 oldItem.setGstAmount(0.0);
@@ -358,7 +349,7 @@ public class OrderServiceImpl implements OrderService {
             }
         }
 
-// ---------------------------------------------------------
+        // ---------------------------------------------------------
 
         double subtotalBeforeTax = 0.0;
         double totalTaxAmount = 0.0;
@@ -415,7 +406,6 @@ public class OrderServiceImpl implements OrderService {
                     }
 
                     discountedPrice -= discountAmount;
-
                     // Add to final order discount
                     order.setDiscount(order.getDiscount() + discountAmount);
                 }
@@ -491,15 +481,16 @@ public class OrderServiceImpl implements OrderService {
             }
         }
 
-// Replace list content without clearing JPA list
+
+        // Replace list content without clearing JPA list
         order.getOrder_items().retainAll(finalList);  // keeps only updated items
         order.getOrder_items().addAll(
                 finalList.stream()
                         .filter(i -> !order.getOrder_items().contains(i))
                         .collect(Collectors.toList())
         );
-// ========================================================================
 
+        // ========================================================================
 
         //  Order-level discount
         double orderLevelDiscount = 0.0;

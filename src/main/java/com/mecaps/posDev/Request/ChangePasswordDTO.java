@@ -8,5 +8,5 @@ import lombok.Setter;
 public class ChangePasswordDTO {
    private String oldPassword ;
    private String newPassword ;
-   private String conformPassword ;
+   private String confirmPassword ;
 }

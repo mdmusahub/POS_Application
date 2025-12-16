@@ -32,7 +32,7 @@ public void genrateOtp(String email){
   String otp = String.format("%06d" , new SecureRandom().nextInt(1000000));
   otpMap.put(email , otp);
   expiryDate.put(email , LocalDateTime.now().plusMinutes(60));
-  emailService.sendEmail(email , "Your OTP" , "Your OTP is:" + otp);
+  emailService.sendHtmlEmail(email , "Your OTP" , "Your OTP is:" + otp);
 
 }
     public void verifyOtp(String email , String otp) {
